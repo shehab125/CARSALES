@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرئيسية - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Hero Section Styles */
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        /* Search Form Styles */
+        .search-form {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-title {
+            color: var(--text-color);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-col {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Featured Cars Section */
+        .featured-section {
+            padding: 60px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--dark-gray);
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .car-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .car-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .car-card:hover .car-image img {
+            transform: scale(1.05);
+        }
+
+        .car-content {
+            padding: 20px;
+        }
+
+        .car-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .car-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .car-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .car-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .car-detail i {
+            color: var(--primary-color);
+        }
+
+        .car-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+
+        .car-location i {
+            color: var(--primary-color);
+        }
+
+        .car-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            padding: 60px 0;
+            background-color: var(--light-gray);
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .category-count {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        /* How It Works Section */
+        .how-it-works-section {
+            padding: 60px 0;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step-card {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .step-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('images/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header {
+            background-color: #fff !important;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            color: #1976d2 !important;
+        }
+
+        .nav-links li a {
+            color: #222 !important;
+            font-weight: 500;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: #1976d2 !important;
+        }
+
+        .auth-buttons .btn {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+        }
+        .auth-buttons .btn.btn-primary {
+            background: #ffd600;
+            color: #1976d2;
+        }
+        .auth-buttons .btn.btn-outline {
+            background: transparent;
+            color: #1976d2;
+            border: 1px solid #1976d2;
+        }
+        .user-dropdown-btn, .user-dropdown-content a {
+            color: #222;
+        }
+        .user-dropdown-content {
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <!-- Hero Section -->
+    <section class="hero-section" style="background: url('images/hero-bg.jpg') center/cover no-repeat; min-height: 400px; display: flex; align-items: center; justify-content: center;">
+        <div class="hero-content" style="text-align: center; color: #fff; background: rgba(0,0,0,0.4); padding: 40px 20px; border-radius: 16px;">
+            <h1 style="font-size: 3rem; font-weight: bold; margin-bottom: 16px;">أسرع طريقة لبيع أو شراء سيارتك</h1>
+            <p style="font-size: 1.25rem; margin-bottom: 24px;">منصة Syautobazar توفر لك تجربة مميزة وسهلة لبيع وشراء السيارات بأفضل الأسعار</p>
+            <a href="search.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 12px 32px;">تصفح السيارات</a>
+        </div>
+    </section>
+
+    <!-- Featured Cars Section -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">سيارات مميزة</h2>
+                <p class="section-subtitle">اكتشف أفضل السيارات المعروضة للبيع</p>
+            </div>
+
+            <div class="car-grid">
+                <!-- Car Card 1 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <img src="images/car1.jpg" alt="تويوتا كامري 2023">
+                    </div>
+                    <div class="car-content">
+                        <h3 class="car-title">تويوتا كامري 2023</h3>
+                        <div class="car-price">120,000 ر.س</div>
+                        <div class="car-details">
+                            <div class="car-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>2023</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>5,000 كم</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>بنزين</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-cog"></i>
+                                <span>أوتوماتيك</span>
+                            </div>
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الرياض</span>
+                        </div>
+                        <div class="car-actions">
+                            <a href="car-detail.html" class="btn btn-primary btn-block">عرض التفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 2 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <img src="images/car2.jpg" alt="هيونداي سوناتا 2022">
+                    </div>
+                    <div class="car-content">
+                        <h3 class="car-title">هيونداي سوناتا 2022</h3>
+                        <div class="car-price">95,000 ر.س</div>
+                        <div class="car-details">
+                            <div class="car-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>2022</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>15,000 كم</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>بنزين</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-cog"></i>
+                                <span>أوتوماتيك</span>
+                            </div>
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>جدة</span>
+                        </div>
+                        <div class="car-actions">
+                            <a href="car-detail.html" class="btn btn-primary btn-block">عرض التفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 3 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <img src="images/car3.jpg" alt="نيسان التيما 2021">
+                    </div>
+                    <div class="car-content">
+                        <h3 class="car-title">نيسان التيما 2021</h3>
+                        <div class="car-price">85,000 ر.س</div>
+                        <div class="car-details">
+                            <div class="car-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>2021</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>30,000 كم</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>بنزين</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-cog"></i>
+                                <span>أوتوماتيك</span>
+                            </div>
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الدمام</span>
+                        </div>
+                        <div class="car-actions">
+                            <a href="car-detail.html" class="btn btn-primary btn-block">عرض التفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 4 -->
+                <div class="car-card">
+                    <div class="car-image">
+                        <img src="images/car4.jpg" alt="كيا K5 2022">
+                    </div>
+                    <div class="car-content">
+                        <h3 class="car-title">كيا K5 2022</h3>
+                        <div class="car-price">90,000 ر.س</div>
+                        <div class="car-details">
+                            <div class="car-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>2022</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>20,000 كم</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>بنزين</span>
+                            </div>
+                            <div class="car-detail">
+                                <i class="fas fa-cog"></i>
+                                <span>أوتوماتيك</span>
+                            </div>
+                        </div>
+                        <div class="car-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الرياض</span>
+                        </div>
+                        <div class="car-actions">
+                            <a href="car-detail.html" class="btn btn-primary btn-block">عرض التفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="search.html" class="btn btn-outline">عرض المزيد من السيارات</a>
+            </div>
+        </div>
+    </section>
+
+ 
+    <!-- How It Works Section -->
+    <section class="how-it-works" style="padding: 48px 0; background: #fff;">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 32px;">كيف يعمل Syautobazar؟</h2>
+            <div class="steps" style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+                <div class="step" style="text-align: center; max-width: 200px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">📱</div>
+                    <h3 style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">سجل حسابك</h3>
+                    <p style="font-size: 1rem; color: #555;">أنشئ حساب جديد أو قم بتسجيل الدخول في منصة سيارتي</p>
+                </div>
+                <div class="step" style="text-align: center; max-width: 200px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🚗</div>
+                    <h3 style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">عرض سيارتك</h3>
+                    <p style="font-size: 1rem; color: #555;">قم بإضافة معلومات سيارتك وصور لها بكل سهولة</p>
+                </div>
+                <div class="step" style="text-align: center; max-width: 200px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">💰</div>
+                    <h3 style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">حدد السعر</h3>
+                    <p style="font-size: 1rem; color: #555;">ضع السعر المناسب لسيارتك واستقبل العروض</p>
+                </div>
+                <div class="step" style="text-align: center; max-width: 200px;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🤝</div>
+                    <h3 style="font-size: 1.1rem; font-weight: bold; margin-bottom: 8px;">أتم الصفقة</h3>
+                    <p style="font-size: 1rem; color: #555;">تواصل مع المشترين وأكمل عملية البيع بنجاح</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Cars Section -->
+    <section class="latest-cars" style="padding: 48px 0; background: #f9f9f9;">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 32px;">أحدث السيارات</h2>
+            <div class="cars-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                <!-- Keep dynamic car cards/content here -->
+                <!-- ... existing dynamic car cards ... -->
+            </div>
+            <div style="text-align: center; margin-top: 32px;">
+                <a href="search.html" class="btn btn-outline" style="font-size: 1.1rem; padding: 12px 32px;">عرض المزيد</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Cars Section -->
+    <section class="featured-cars" style="padding: 48px 0; background: #fff;">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 32px;">السيارات المميزة</h2>
+            <div class="cars-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                <!-- Keep dynamic featured car cards/content here -->
+                <!-- ... existing dynamic featured car cards ... -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">هل أنت جاهز لبيع سيارتك؟</h2>
+                <p class="cta-text">انضم إلى آلاف المستخدمين الذين يثقون بنا لبيع وشراء سياراتهم. ابدأ الآن وأعرض سيارتك للبيع في دقائق.</p>
+                <div class="cta-buttons">
+                    <a href="sell.html" class="btn btn-primary" id="sellCarCtaBtn" style="display:none">بيع سيارتك الآن</a>
+                    <a href="about.html" class="btn btn-outline">تعرف علينا أكثر</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subscription Box Section -->
+    <section id="subscriptionBox" style="margin: 40px auto; max-width: 400px; display: block;">
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); padding: 32px 24px; text-align: center;">
+            <h2 style="font-size: 1.5rem; font-weight: bold; color: #0056b3; margin-bottom: 12px;">الاشتراك الفصلي</h2>
+            <p style="color: #333; margin-bottom: 18px;">كل ما تحتاجه لبيع وشراء السيارات</p>
+            <div style="font-size: 2rem; font-weight: bold; color: #222; margin-bottom: 8px;">20 دولار/لكل ثلاثة أشهر</div>
+            <ul style="text-align: right; margin: 18px 0 24px 0; padding: 0; list-style: none; color: #222;">
+                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #28a745; margin-left: 6px;"></i> نشر إعلانات بيع سيارات غير محدودة</li>
+                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #28a745; margin-left: 6px;"></i> الوصول إلى كافة تفاصيل السيارات المعروضة</li>
+                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #28a745; margin-left: 6px;"></i> التواصل مع البائعين مباشرة</li>
+                <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: #28a745; margin-left: 6px;"></i> الحصول على إشعارات للسيارات الجديدة</li>
+            </ul>
+            <button id="subscribeBtn" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">تسجيل الدخول للاشتراك</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsh7PnIRja-A9DLmP1RfA3O7vakmXEJBw",
+            authDomain: "gig2-b4dfb.firebaseapp.com",
+            projectId: "gig2-b4dfb",
+            storageBucket: "gig2-b4dfb.firebasestorage.app",
+            messagingSenderId: "1016083025093",
+            appId: "1:1016083025093:web:a1863069f1cf55537eb4ac",
+            measurementId: "G-7EENTG3F0M"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Handle User Dropdown
+        const userDropdownBtn = document.getElementById('userDropdownBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        const changePasswordLink = document.getElementById('changePasswordLink');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const authButtons = document.getElementById('authButtons');
+
+        // Toggle dropdown
+        if (userDropdownBtn) {
+            userDropdownBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (userDropdown) {
+                    userDropdown.classList.toggle('show');
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        if (userDropdown) {
+            window.addEventListener('click', function(e) {
+                if (!e.target.matches('.user-dropdown-btn') && !e.target.matches('.user-dropdown-btn *')) {
+                    if (userDropdown.classList.contains('show')) {
+                        userDropdown.classList.remove('show');
+                    }
+                }
+            });
+        }
+
+        // Handle change password link
+        if (changePasswordLink) {
+            changePasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (userDropdown) {
+                    userDropdown.classList.remove('show');
+                }
+                if (window.location.href.includes('profile.html#change-password')) {
+                    // Do nothing, as the page is already loaded
+                } else {
+                    window.location.href = 'profile.html#change-password';
+                }
+            });
+        }
+
+        // Handle logout
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                    firebase.auth().signOut()
+                        .then(() => {
+                            window.location.href = 'auth.html';
+                        })
+                        .catch((error) => {
+                            console.error('Error signing out:', error);
+                            alert('حدث خطأ أثناء تسجيل الخروج');
+                        });
+                }
+            });
+        }
+
+        // Update UI based on auth state
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                if (authButtons) {
+                    authButtons.innerHTML = `
+                        <div class="user-dropdown">
+                            <button class="user-dropdown-btn" id="userDropdownBtn">
+                                <img src="${user.photoURL || 'images/default-avatar.jpg'}" alt="صورة المستخدم" class="user-avatar">
+                                <span id="userNameDisplay">${user.displayName || 'المستخدم'}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="user-dropdown-content" id="userDropdown">
+                                <a href="profile.html">
+                                    <i class="fas fa-user"></i>
+                                    الملف الشخصي
+                                </a>
+                                <a href="#" id="changePasswordLink">
+                                    <i class="fas fa-key"></i>
+                                    تغيير كلمة المرور
+                                </a>
+                                <a href="#" class="logout" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    تسجيل الخروج
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    // Reattach event listeners
+                    attachDropdownListeners();
+                }
+            } else {
+                // User is signed out
+                if (authButtons) {
+                    authButtons.innerHTML = `
+                        <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                        <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                    `;
+                }
+            }
+        });
+
+        // Function to attach dropdown event listeners
+        function attachDropdownListeners() {
+            const userDropdownBtn = document.getElementById('userDropdownBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            const changePasswordLink = document.getElementById('changePasswordLink');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (userDropdownBtn) {
+                userDropdownBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (userDropdown) {
+                        userDropdown.classList.toggle('show');
+                    }
+                });
+            }
+
+            if (changePasswordLink) {
+                changePasswordLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (userDropdown) {
+                        userDropdown.classList.remove('show');
+                    }
+                    if (window.location.href.includes('profile.html#change-password')) {
+                        // Do nothing, as the page is already loaded
+                    } else {
+                        window.location.href = 'profile.html#change-password';
+                    }
+                });
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                        firebase.auth().signOut()
+                            .then(() => {
+                                window.location.href = 'auth.html';
+                            })
+                            .catch((error) => {
+                                console.error('Error signing out:', error);
+                                alert('حدث خطأ أثناء تسجيل الخروج');
+                            });
+                    }
+                });
+            }
+        }
+
+        // Update subscription button text based on auth and subscription state
+        firebase.auth().onAuthStateChanged(async (user) => {
+            const subscribeBtn = document.getElementById('subscribeBtn');
+            if (!subscribeBtn) return;
+            if (user) {
+                // Assume you have a function to get user subscription status
+                // You may need to implement getUserSubscriptionStatus(uid)
+                let isSubscribed = false;
+                try {
+                    // Example: fetch subscription status from your backend or Firestore
+                    const response = await fetch(`/api/user-subscription?uid=${user.uid}`);
+                    const data = await response.json();
+                    isSubscribed = data && data.active;
+                } catch (e) {
+                    isSubscribed = false;
+                }
+                if (isSubscribed) {
+                    subscribeBtn.textContent = 'انت مشترك بالفعل';
+                    subscribeBtn.disabled = true;
+                    subscribeBtn.classList.add('btn-outline');
+                    subscribeBtn.classList.remove('btn-primary');
+                } else {
+                    subscribeBtn.textContent = 'اشترك الآن';
+                    subscribeBtn.disabled = false;
+                    subscribeBtn.classList.add('btn-primary');
+                    subscribeBtn.classList.remove('btn-outline');
+                }
+            } else {
+                subscribeBtn.textContent = 'تسجيل الدخول للاشتراك';
+                subscribeBtn.disabled = false;
+                subscribeBtn.classList.add('btn-primary');
+                subscribeBtn.classList.remove('btn-outline');
+            }
+        });
+    </script>
+</body>
+</html>

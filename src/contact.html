@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اتصل بنا - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Contact Page Styles */
+        .contact-container {
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .contact-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .contact-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .contact-subtitle {
+            font-size: 18px;
+            color: var(--dark-gray);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .contact-form-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .info-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .info-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            font-size: 16px;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        .info-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .info-text a:hover {
+            text-decoration: underline;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .map-container {
+            margin-top: 40px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+            height: 400px;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .faq-section {
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .faq-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            background-color: var(--white);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 0 20px 20px;
+            max-height: 300px;
+        }
+
+        .faq-answer-text {
+            font-size: 16px;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .contact-header {
+                margin-bottom: 30px;
+            }
+
+            .contact-title {
+                font-size: 28px;
+            }
+
+            .contact-subtitle {
+                font-size: 16px;
+            }
+
+            .info-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .map-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html" class="active">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contact Section -->
+    <section class="contact-container">
+        <div class="contact-header">
+            <h1 class="contact-title">اتصل بنا</h1>
+            <p class="contact-subtitle">نحن هنا للإجابة على جميع استفساراتك ومساعدتك في كل ما تحتاجه. لا تتردد في التواصل معنا من خلال أي من الطرق التالية.</p>
+        </div>
+
+        <div class="contact-content">
+            <div class="contact-form-container">
+                <h2 class="form-title">أرسل لنا رسالة</h2>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">الاسم الكامل</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="أدخل اسمك الكامل" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">البريد الإلكتروني</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="أدخل بريدك الإلكتروني" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="form-label">رقم الهاتف</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="أدخل رقم هاتفك">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">الموضوع</label>
+                        <input type="text" id="subject" name="subject" class="form-input" placeholder="أدخل موضوع الرسالة" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">الرسالة</label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="اكتب رسالتك هنا..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">إرسال الرسالة</button>
+                </form>
+            </div>
+
+            <div class="contact-info">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3 class="info-title">العنوان</h3>
+                        <p class="info-text">الجمهورية العربية السورية<br>دمشق، شارع الحمراء، بناء رقم 15</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3 class="info-title">اتصل بنا</h3>
+                        <p class="info-text">
+                            هاتف: <a href="tel:+963111234567">+963-11-1234567</a><br>
+                            واتس آب: <a href="https://wa.me/963111234567">+963-11-1234567</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3 class="info-title">راسلنا</h3>
+                        <p class="info-text">
+                            البريد العام: <a href="mailto:contact@syautobazar.com">contact@syautobazar.com</a><br>
+                            الدعم الفني: <a href="mailto:support@syautobazar.com">support@syautobazar.com</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3 class="info-title">ساعات العمل</h3>
+                        <p class="info-text">
+                            الأحد - الخميس: 9:00 صباحاً - 5:00 مساءً<br>
+                            الجمعة - السبت: مغلق
+                        </p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3 class="info-title">تابعنا</h3>
+                        <p class="info-text">تواصل معنا عبر منصات التواصل الاجتماعي للحصول على آخر الأخبار والعروض.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d106456.51594432085!2d36.23063065!3d33.5073755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1518e6dc413cc6a7%3A0x6b9f66ebd1e394f2!2sDamascus%2C%20Syria!5e0!3m2!1sen!2sus!4v1621345678901!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="faq-title">الأسئلة الشائعة</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كيف يمكنني بيع سيارتي على Syautobazar؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">لبيع سيارتك على Syautobazar، يجب عليك أولاً إنشاء حساب والاشتراك في باقة بيع السيارات. بعد ذلك، يمكنك النقر على زر "بيع سيارتك" وإدخال جميع تفاصيل السيارة والصور المطلوبة. بمجرد الانتهاء، سيتم نشر إعلانك على الموقع ليراه المشترون المحتملون.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>ما هي تكلفة الاشتراك في Syautobazar؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">تكلفة الاشتراك في باقة بيع السيارات هي 20 دولار لمدة 3 أشهر. هذا يتيح لك عرض سيارتك للبيع وإضافة حتى 10 صور لكل سيارة. للوكلاء، نقدم باقة خاصة بتكلفة 50 دولار لمدة 3 أشهر، تتيح عرض حتى 10 سيارات للبيع.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كيف يمكنني التواصل مع البائعين؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">يمكنك التواصل مع البائعين مباشرة من خلال معلومات الاتصال المتوفرة في صفحة تفاصيل السيارة. عادة ما يوفر البائعون رقم هاتف أو بريد إلكتروني للتواصل. يمكنك أيضاً استخدام نموذج الاتصال المتوفر في الموقع للتواصل مع البائع.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>هل يمكنني إلغاء اشتراكي في أي وقت؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">نعم، يمكنك إلغاء اشتراكك في أي وقت من خلال صفحة الملف الشخصي. سيظل اشتراكك فعالاً حتى نهاية الفترة المدفوعة. يمكنك أيضاً إلغاء التجديد التلقائي إذا كنت لا ترغب في تجديد اشتراكك تلقائياً.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كيف يمكنني الإبلاغ عن إعلان مخالف؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">إذا وجدت إعلاناً مخالفاً للشروط والأحكام، يمكنك النقر على زر "الإبلاغ عن إعلان" الموجود في صفحة تفاصيل السيارة. سيقوم فريق الدعم لدينا بمراجعة البلاغ واتخاذ الإجراء المناسب. يمكنك أيضاً التواصل معنا مباشرة عبر البريد الإلكتروني أو نموذج الاتصال.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script>
+        // Toggle FAQ
+        function toggleFaq(element) {
+            element.classList.toggle('active');
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('active');
+        }
+
+        // Contact Form Submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+                    const phone = document.getElementById('phone').value;
+                    const subject = document.getElementById('subject').value;
+                    const message = document.getElementById('message').value;
+                    
+                    // Here you would typically send the form data to your backend
+                    // For now, we'll just show an alert
+                    alert(`شكراً ${name} على تواصلك معنا! سنقوم بالرد عليك في أقرب وقت ممكن.`);
+                    
+                    // Reset the form
+                    contactForm.reset();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

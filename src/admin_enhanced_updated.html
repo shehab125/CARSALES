@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الأدمن - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/enhanced-styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <style>
+        /* Admin Dashboard Styles */
+        .admin-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 250px;
+            background-color: var(--text-color);
+            color: var(--white);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .admin-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .admin-subtitle {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu-link:hover, .sidebar-menu-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu-icon {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .admin-content {
+            flex: 1;
+            padding: 20px;
+            background-color: var(--light-gray);
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-search {
+            position: relative;
+        }
+
+        .admin-search input {
+            padding-right: 40px;
+            width: 250px;
+        }
+
+        .admin-search i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        .card-icon.blue {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .card-icon.green {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .card-icon.orange {
+            background-color: rgba(230, 126, 34, 0.1);
+            color: #e67e22;
+        }
+
+        .card-icon.red {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        /* Tables */
+        .admin-table-container {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .admin-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .admin-table-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 15px 20px;
+            text-align: right;
+        }
+
+        .admin-table th {
+            background-color: var(--light-gray);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .admin-table tr {
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .admin-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .admin-table td {
+            color: var(--dark-gray);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .table-action.view {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+        }
+
+        .table-action.edit {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .table-action.delete {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .table-action:hover {
+            opacity: 0.8;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .status-badge.pending {
+            background-color: rgba(230, 126, 34, 0.1);
+            color: #e67e22;
+        }
+
+        .status-badge.inactive {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        /* Car Review Cards */
+        .car-review-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .car-review-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .car-review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-review-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .car-review-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .car-review-card:hover .car-review-image img {
+            transform: scale(1.05);
+        }
+
+        .car-review-content {
+            padding: 20px;
+        }
+
+        .car-review-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .car-review-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .car-review-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .car-review-detail i {
+            color: var(--primary-color);
+        }
+
+        .car-review-description {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            max-height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .car-review-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: var(--dark-gray);
+            margin-bottom: 20px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .loading-spinner i {
+            font-size: 36px;
+            color: var(--primary-color);
+        }
+
+        .section-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            font-size: 24px;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--dark-gray);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .toast-success .toast-icon {
+            color: #2ecc71;
+        }
+
+        .toast-error .toast-icon {
+            color: #e74c3c;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .sidebar-header, .admin-subtitle, .sidebar-menu-text {
+                display: none;
+            }
+
+            .admin-title {
+                font-size: 16px;
+            }
+
+            .sidebar-menu-link {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .sidebar-menu-icon {
+                margin: 0;
+            }
+
+            .car-review-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .admin-actions {
+                width: 100%;
+            }
+
+            .admin-search {
+                flex: 1;
+            }
+
+            .admin-search input {
+                width: 100%;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-table-container {
+                overflow-x: auto;
+            }
+
+            .admin-table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2 class="admin-title">لوحة التحكم</h2>
+                <p class="admin-subtitle">إدارة الموقع</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">لوحة المعلومات</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="cars">
+                        <i class="fas fa-car sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">السيارات</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="pending">
+                        <i class="fas fa-clock sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">الطلبات المعلقة</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="users">
+                        <i class="fas fa-users sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">المستخدمين</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="subscriptions">
+                        <i class="fas fa-credit-card sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">الاشتراكات</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="reports">
+                        <i class="fas fa-chart-bar sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">التقارير</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-link" data-section="settings">
+                        <i class="fas fa-cog sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">الإعدادات</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="index.html" class="sidebar-menu-link">
+                        <i class="fas fa-sign-out-alt sidebar-menu-icon"></i>
+                        <span class="sidebar-menu-text">العودة للموقع</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="admin-section active">
+                <div class="admin-header">
+                    <h1 class="page-title">لوحة المعلومات</h1>
+                    <div class="admin-actions">
+                        <div class="admin-search">
+                            <input type="text" class="form-input" id="dashboardSearchInput" placeholder="بحث...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-primary" id="refreshDashboardBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>تحديث</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-icon blue">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalCars">0</div>
+                            <div class="card-label">إجمالي السيارات</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="activeCars">0</div>
+                            <div class="card-label">السيارات النشطة</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="pendingCars">0</div>
+                            <div class="card-label">السيارات المعلقة</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalUsers">0</div>
+                            <div class="card-label">إجمالي المستخدمين</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon green">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="activeSubscriptions">0</div>
+                            <div class="card-label">الاشتراكات النشطة</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon red">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalRevenue">0 ر.س</div>
+                            <div class="card-label">إجمالي الإيرادات</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Cars -->
+                <div class="admin-table-container" id="recentCarsTableContainer">
+                    <div class="admin-table-header">
+                        <h2 class="admin-table-title">أحدث السيارات</h2>
+                        <button class="btn btn-sm btn-outline" id="viewAllCarsBtn">
+                            <i class="fas fa-eye"></i>
+                            <span>عرض الكل</span>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="recentCarsTable">
+                            <thead>
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>الماركة/الموديل</th>
+                                    <th>السنة</th>
+                                    <th>السعر</th>
+                                    <th>المالك</th>
+                                    <th>التاريخ</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Users -->
+                <div class="admin-table-container" id="recentUsersTableContainer">
+                    <div class="admin-table-header">
+                        <h2 class="admin-table-title">أحدث المستخدمين</h2>
+                        <button class="btn btn-sm btn-outline" id="viewAllUsersBtn">
+                            <i class="fas fa-eye"></i>
+                            <span>عرض الكل</span>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="recentUsersTable">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الهاتف</th>
+                                    <th>الموقع</th>
+                                    <th>تاريخ التسجيل</th>
+                                    <th>الاشتراك</th>
+                                    <th>الصلاحية</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cars Section -->
+            <div id="cars-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">إدارة السيارات</h1>
+                    <div class="admin-actions">
+                        <div class="admin-search">
+                            <input type="text" class="form-input" id="carsSearchInput" placeholder="بحث...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-primary" id="addCarBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة سيارة</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cars Table -->
+                <div class="admin-table-container" id="carsTableContainer">
+                    <div class="admin-table-header">
+                        <h2 class="admin-table-title">جميع السيارات</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-outline active" data-filter="all">الكل</button>
+                            <button class="btn btn-sm btn-outline" data-filter="active">نشط</button>
+                            <button class="btn btn-sm btn-outline" data-filter="pending">معلق</button>
+                            <button class="btn btn-sm btn-outline" data-filter="rejected">مرفوض</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="carsTable">
+                            <thead>
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>الماركة/الموديل</th>
+                                    <th>السنة</th>
+                                    <th>السعر</th>
+                                    <th>المالك</th>
+                                    <th>التاريخ</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Section -->
+            <div id="pending-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">الطلبات المعلقة</h1>
+                    <div class="admin-actions">
+                        <div class="admin-search">
+                            <input type="text" class="form-input" id="pendingSearchInput" placeholder="بحث...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-primary" id="refreshPendingBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>تحديث</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pending Cars -->
+                <div class="car-review-cards" id="pendingCarsContainer">
+                    <!-- سيتم ملء هذا القسم ديناميكياً عبر JavaScript -->
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">إدارة المستخدمين</h1>
+                    <div class="admin-actions">
+                        <div class="admin-search">
+                            <input type="text" class="form-input" id="usersSearchInput" placeholder="بحث...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-primary" id="addUserBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة مستخدم</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="admin-table-container" id="usersTableContainer">
+                    <div class="admin-table-header">
+                        <h2 class="admin-table-title">جميع المستخدمين</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-outline active" data-filter="all">الكل</button>
+                            <button class="btn btn-sm btn-outline" data-filter="admin">المشرفين</button>
+                            <button class="btn btn-sm btn-outline" data-filter="subscribed">المشتركين</button>
+                            <button class="btn btn-sm btn-outline" data-filter="regular">العاديين</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>الاسم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>الهاتف</th>
+                                    <th>الموقع</th>
+                                    <th>تاريخ التسجيل</th>
+                                    <th>الاشتراك</th>
+                                    <th>الصلاحية</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscriptions Section -->
+            <div id="subscriptions-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">إدارة الاشتراكات</h1>
+                    <div class="admin-actions">
+                        <div class="admin-search">
+                            <input type="text" class="form-input" id="subscriptionsSearchInput" placeholder="بحث...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="btn btn-primary" id="addSubscriptionBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>إضافة اشتراك</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subscriptions Table -->
+                <div class="admin-table-container" id="subscriptionsTableContainer">
+                    <div class="admin-table-header">
+                        <h2 class="admin-table-title">جميع الاشتراكات</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-outline active" data-filter="all">الكل</button>
+                            <button class="btn btn-sm btn-outline" data-filter="active">النشطة</button>
+                            <button class="btn btn-sm btn-outline" data-filter="expired">المنتهية</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="subscriptionsTable">
+                            <thead>
+                                <tr>
+                                    <th>المستخدم</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>نوع الاشتراك</th>
+                                    <th>تاريخ البدء</th>
+                                    <th>تاريخ الانتهاء</th>
+                                    <th>المبلغ</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">التقارير</h1>
+                    <div class="admin-actions">
+                        <div class="date-range-picker">
+                            <input type="date" class="form-input" id="startDate">
+                            <span>إلى</span>
+                            <input type="date" class="form-input" id="endDate">
+                        </div>
+                        <button class="btn btn-primary" id="generateReportBtn">
+                            <i class="fas fa-chart-line"></i>
+                            <span>إنشاء تقرير</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reports Content -->
+                <div class="reports-content" id="reportsContent">
+                    <div class="empty-state">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>لا توجد تقارير</h3>
+                        <p>قم بتحديد نطاق زمني وانقر على "إنشاء تقرير" لعرض البيانات.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings-section" class="admin-section">
+                <div class="admin-header">
+                    <h1 class="page-title">الإعدادات</h1>
+                    <div class="admin-actions">
+                        <button class="btn btn-primary" id="saveSettingsBtn">
+                            <i class="fas fa-save"></i>
+                            <span>حفظ التغييرات</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="settings-content">
+                    <div class="admin-table-container">
+                        <div class="admin-table-header">
+                            <h2 class="admin-table-title">إعدادات الموقع</h2>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="siteName">اسم الموقع</label>
+                                <input type="text" class="form-input" id="siteName" value="Syautobazar">
+                            </div>
+                            <div class="form-group">
+                                <label for="siteDescription">وصف الموقع</label>
+                                <textarea class="form-input" id="siteDescription" rows="3">موقع بيع وشراء السيارات</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">البريد الإلكتروني للتواصل</label>
+                                <input type="email" class="form-input" id="contactEmail" value="contact@syautobazar.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPhone">رقم الهاتف للتواصل</label>
+                                <input type="text" class="form-input" id="contactPhone" value="+966 12 345 6789">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-table-container">
+                        <div class="admin-table-header">
+                            <h2 class="admin-table-title">إعدادات الاشتراكات</h2>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="subscriptionPrice">سعر الاشتراك (ر.س)</label>
+                                <input type="number" class="form-input" id="subscriptionPrice" value="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="subscriptionDuration">مدة الاشتراك (بالأشهر)</label>
+                                <input type="number" class="form-input" id="subscriptionDuration" value="3">
+                            </div>
+                            <div class="form-group">
+                                <label for="maxListings">الحد الأقصى للإعلانات لكل مشترك</label>
+                                <input type="number" class="form-input" id="maxListings" value="10">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Firebase -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js"></script>
+
+    <!-- Import Scripts -->
+    <script type="module" src="js/firebase-api.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/admin-auth.js"></script>
+    <script type="module" src="js/admin-car-review.js"></script>
+    <script type="module" src="js/admin_enhanced.js"></script>
+    <script type="module" src="js/enhanced-functions.js"></script>
+    <script type="module" src="js/admin_enhanced_integration.js"></script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

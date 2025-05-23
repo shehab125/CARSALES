@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاشتراك - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Subscription Page Styles */
+        .subscription-container {
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .subscription-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .subscription-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .subscription-subtitle {
+            font-size: 16px;
+            color: var(--dark-gray);
+        }
+
+        .subscription-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .plan-details {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .plan-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .plan-duration {
+            font-size: 16px;
+            color: var(--dark-gray);
+            margin-bottom: 20px;
+        }
+
+        .plan-features {
+            margin-bottom: 30px;
+        }
+
+        .plan-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .plan-feature i {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .plan-feature-text {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .payment-options {
+            margin-bottom: 30px;
+        }
+
+        .payment-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .payment-method.active {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .payment-method:hover:not(.active) {
+            border-color: var(--dark-gray);
+        }
+
+        .payment-method-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .payment-method-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .success-message i {
+            color: #2ecc71;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .success-message h3 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        /* Error Message */
+        .error-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .error-message i {
+            color: #e74c3c;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .error-message h3 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .paypal-button-container {
+            margin-top: 20px;
+        }
+
+        .subscription-benefits {
+            margin-top: 40px;
+        }
+
+        .benefits-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .benefit-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .benefit-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .benefit-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .benefit-description {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .faq-item {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            background-color: var(--white);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .faq-question:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 0 20px 15px;
+            max-height: 200px;
+        }
+
+        .faq-answer-text {
+            font-size: 14px;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .payment-methods {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <!-- Subscription Section -->
+    <section class="subscription-container">
+        <div class="subscription-header">
+            <h1 class="subscription-title">باقات الاشتراك</h1>
+            <p class="subscription-subtitle">اختر الباقة المناسبة لك وابدأ بيع سياراتك</p>
+        </div>
+
+        <!-- Current Subscription Status -->
+        <div id="currentSubscriptionStatus" class="subscription-card">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Subscription Plans -->
+        <div class="subscription-card">
+            <div class="plan-details">
+                <div class="plan-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h2 class="plan-name">باقة بيع السيارات</h2>
+                <div class="plan-price">20 دولار</div>
+                <div class="plan-duration">لمدة 3 أشهر</div>
+            </div>
+            <div class="plan-features">
+                <div class="plan-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="plan-feature-text">إمكانية عرض سيارتك للبيع</span>
+                </div>
+                <div class="plan-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="plan-feature-text">إضافة حتى 10 صور لكل سيارة</span>
+                </div>
+                <div class="plan-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="plan-feature-text">ظهور إعلانك في نتائج البحث</span>
+                </div>
+                <div class="plan-feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="plan-feature-text">إمكانية تعديل إعلانك في أي وقت</span>
+                </div>
+            </div>
+            <div class="payment-options">
+                <h3 class="payment-title">اختر طريقة الدفع</h3>
+                <div class="payment-methods">
+                    <div class="payment-method active" data-method="paypal" id="paypalMethod">
+                        <div class="payment-method-icon">
+                            <i class="fab fa-paypal"></i>
+                        </div>
+                        <div class="payment-method-name">PayPal</div>
+                    </div>
+                    <div class="payment-method" data-method="credit-card" id="creditCardMethod">
+                        <div class="payment-method-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="payment-method-name">بطاقة ائتمان</div>
+                    </div>
+                </div>
+                <div class="paypal-button-container" id="paypal-button-container" style="display: block;"></div>
+                <button class="btn btn-primary btn-block" id="subscribeBtn" style="display: none;">اشترك الآن</button>
+            </div>
+        </div>
+
+        <!-- Subscription Benefits -->
+        <div class="subscription-benefits">
+            <h2 class="benefits-title">مميزات الاشتراك</h2>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3 class="benefit-title">وصول أكبر</h3>
+                    <p class="benefit-description">عرض سيارتك لآلاف المشترين المحتملين يومياً</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="benefit-title">بيع أسرع</h3>
+                    <p class="benefit-description">بيع سيارتك بشكل أسرع من خلال منصتنا المتخصصة</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="benefit-title">تعاملات آمنة</h3>
+                    <p class="benefit-description">بيئة آمنة للتعامل مع المشترين المهتمين</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="benefit-title">دعم متميز</h3>
+                    <p class="benefit-description">فريق دعم متخصص لمساعدتك في كل خطوة</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 class="faq-title">الأسئلة الشائعة</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كيف يمكنني الاشتراك في الموقع؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">يمكنك الاشتراك بسهولة من خلال إنشاء حساب أولاً، ثم اختيار باقة الاشتراك المناسبة لك، ودفع قيمة الاشتراك عبر PayPal أو بطاقة الائتمان.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>هل يمكنني إلغاء اشتراكي في أي وقت؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">نعم، يمكنك إلغاء اشتراكك في أي وقت من خلال صفحة الملف الشخصي. سيظل اشتراكك فعالاً حتى نهاية الفترة المدفوعة.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كم عدد السيارات التي يمكنني عرضها للبيع؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">يمكنك عرض سيارة واحدة للبيع في وقت واحد. إذا كنت ترغب في عرض المزيد من السيارات، يمكنك الترقية إلى باقة الوكلاء.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>هل هناك رسوم إضافية لبيع السيارة؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">لا، لا توجد أي رسوم إضافية. قيمة الاشتراك هي الرسوم الوحيدة التي ستدفعها لعرض سيارتك للبيع.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>كيف يمكنني التواصل مع المشترين؟</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p class="faq-answer-text">سيتمكن المشترون المهتمون من التواصل معك عبر رقم الهاتف أو البريد الإلكتروني الذي قمت بإضافته في إعلانك.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <a href="sell.html" class="btn btn-outline" id="sellCarNavBtn" style="display: none;">بيع سيارتك</a>
+    <a href="sell.html" class="btn btn-outline" id="sellCarCtaBtn" style="display: none;">بيع سيارتك</a>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PayPal SDK -->
+    <script src="/paypal-sdk.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/subscription.js"></script>
+    <script type="module" src="js/firebase-api.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+    import { getCurrentUser, getUserData } from './js/firebase-api.js';
+    // Function to check subscription before navigating to sell page
+    async function handleSellCarClick(e) {
+        e.preventDefault();
+        const user = await getCurrentUser();
+        if (!user) {
+            window.location.href = 'auth.html?redirect=sell';
+            return;
+        }
+        const userData = await getUserData(user.uid);
+        if (userData && userData.userData && userData.userData.isSubscribed) {
+            window.location.href = 'sell.html';
+        } else {
+            alert('يجب الاشتراك في باقة قبل بيع سيارتك.');
+        }
+    }
+    // Attach to all Sell Car buttons/links
+    document.addEventListener('DOMContentLoaded', function() {
+        const sellCarLinks = [
+            document.getElementById('sellCarNavBtn'),
+            document.getElementById('sellCarCtaBtn'),
+            ...document.querySelectorAll('a[href="sell.html"]'),
+            ...document.querySelectorAll('a.btn[href="sell.html"]')
+        ].filter(Boolean);
+        sellCarLinks.forEach(link => {
+            link.addEventListener('click', handleSellCarClick);
+        });
+    });
+    </script>
+</body>
+</html>

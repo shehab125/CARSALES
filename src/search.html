@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بحث السيارات - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Search Page Styles */
+        .search-container {
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .search-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .search-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .search-subtitle {
+            font-size: 16px;
+            color: var(--dark-gray);
+        }
+
+        .search-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .search-filters {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+
+        .search-results {
+            flex: 3;
+            min-width: 300px;
+        }
+
+        .filter-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .price-input {
+            flex: 1;
+        }
+
+        .filter-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Results Controls */
+        .results-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-count {
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .results-count span {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .results-sort {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sort-label {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-option {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .view-option.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .view-option:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+
+        /* Grid View */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* List View */
+        .cars-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .car-list-item {
+            display: flex;
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .car-list-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-list-image {
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .car-list-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .car-list-item:hover .car-list-image img {
+            transform: scale(1.05);
+        }
+
+        .car-list-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .car-list-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .car-list-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .car-list-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .car-list-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .car-list-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .car-list-detail i {
+            color: var(--primary-color);
+        }
+
+        .car-list-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+
+        .car-list-location i {
+            color: var(--primary-color);
+        }
+
+        .car-list-description {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .car-list-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 5px;
+        }
+
+        .pagination-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination-item.active {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .pagination-item:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+
+        .pagination-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* No Results */
+        .no-results {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .no-results-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .no-results-text {
+            font-size: 16px;
+            color: var(--dark-gray);
+            margin-bottom: 20px;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--light-gray);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .car-list-item {
+                flex-direction: column;
+            }
+
+            .car-list-image {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-content {
+                flex-direction: column;
+            }
+
+            .search-filters {
+                max-width: 100%;
+            }
+
+            .results-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="search.html" class="active">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <!-- Search Section -->
+    <section class="search-container">
+        <div class="search-header">
+            <h1 class="search-title">بحث السيارات</h1>
+            <p class="search-subtitle">ابحث عن سيارتك المثالية باستخدام خيارات البحث المتقدمة</p>
+        </div>
+
+        <div class="search-content">
+            <!-- Search Filters -->
+            <div class="search-filters">
+                <div class="filter-card">
+                    <h2 class="filter-title">خيارات البحث</h2>
+                    <form id="searchForm">
+                        <div class="filter-group">
+                            <label for="make" class="filter-label">الشركة المصنعة</label>
+                            <select id="make" name="make" class="form-select">
+                                <option value="">جميع الشركات</option>
+                                <!-- سيتم ملء هذه القائمة ديناميكياً عبر JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="model" class="filter-label">الطراز</label>
+                            <select id="model" name="model" class="form-select">
+                                <option value="">جميع الطرازات</option>
+                                <!-- سيتم ملء هذه القائمة ديناميكياً عبر JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="year" class="filter-label">سنة الصنع</label>
+                            <select id="year" name="year" class="form-select">
+                                <option value="">جميع السنوات</option>
+                                <!-- سيتم ملء هذه القائمة ديناميكياً عبر JavaScript -->
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">السعر (ر.س)</label>
+                            <div class="price-range">
+                                <input type="number" id="minPrice" name="minPrice" class="form-input price-input" placeholder="من">
+                                <span>-</span>
+                                <input type="number" id="maxPrice" name="maxPrice" class="form-input price-input" placeholder="إلى">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="location" class="filter-label">المدينة/الموقع</label>
+                            <select id="location" name="location" class="form-select">
+                                <option value="">جميع المدن</option>
+                                <option value="الرياض">الرياض</option>
+                                <option value="جدة">جدة</option>
+                                <option value="الدمام">الدمام</option>
+                                <option value="مكة المكرمة">مكة المكرمة</option>
+                                <option value="المدينة المنورة">المدينة المنورة</option>
+                                <option value="تبوك">تبوك</option>
+                                <option value="أبها">أبها</option>
+                                <option value="خميس مشيط">خميس مشيط</option>
+                                <option value="الطائف">الطائف</option>
+                                <option value="أخرى">مدن أخرى</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="transmission" class="filter-label">ناقل الحركة</label>
+                            <select id="transmission" name="transmission" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="أوتوماتيك">أوتوماتيك</option>
+                                <option value="يدوي">يدوي</option>
+                                <option value="نصف أوتوماتيك">نصف أوتوماتيك</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="fuelType" class="filter-label">نوع الوقود</label>
+                            <select id="fuelType" name="fuelType" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="بنزين">بنزين</option>
+                                <option value="ديزل">ديزل</option>
+                                <option value="هجين">هجين</option>
+                                <option value="كهربائي">كهربائي</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="condition" class="filter-label">حالة السيارة</label>
+                            <select id="condition" name="condition" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="جديدة">جديدة</option>
+                                <option value="مستعملة">مستعملة</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="mileage" class="filter-label">المسافة المقطوعة</label>
+                            <select id="mileage" name="mileage" class="form-select">
+                                <option value="">الكل</option>
+                                <option value="0-5000">0 - 5,000 كم</option>
+                                <option value="5000-10000">5,000 - 10,000 كم</option>
+                                <option value="10000-50000">10,000 - 50,000 كم</option>
+                                <option value="50000-100000">50,000 - 100,000 كم</option>
+                                <option value="100000+">أكثر من 100,000 كم</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                بحث
+                            </button>
+                            <button type="reset" class="btn btn-outline">
+                                <i class="fas fa-redo"></i>
+                                إعادة تعيين
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="search-results">
+                <div class="results-controls">
+                    <div class="results-count">
+                        تم العثور على <span id="resultsCount">0</span> سيارة
+                    </div>
+                    <div class="results-sort">
+                        <span class="sort-label">ترتيب حسب:</span>
+                        <select id="sortOrder" class="form-select">
+                            <option value="newest">الأحدث</option>
+                            <option value="oldest">الأقدم</option>
+                            <option value="price_low">السعر: من الأقل إلى الأعلى</option>
+                            <option value="price_high">السعر: من الأعلى إلى الأقل</option>
+                            <option value="mileage_low">المسافة: من الأقل إلى الأعلى</option>
+                            <option value="mileage_high">المسافة: من الأعلى إلى الأقل</option>
+                            <option value="yearDesc">السنة: من الأحدث إلى الأقدم</option>
+                            <option value="yearAsc">السنة: من الأقدم إلى الأحدث</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                <div id="searchResults" class="cars-grid">
+                    <!-- سيتم ملء هذا القسم ديناميكياً عبر JavaScript -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination">
+                    <!-- سيتم ملء هذا القسم ديناميكياً عبر JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/search_final_fix.js"></script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

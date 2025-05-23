@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيع سيارتك - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html" class="active">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <!-- Sell Car Form -->
+    <section class="sell-car-container">
+        <div class="sell-car-header">
+            <h1 class="sell-car-title">بيع سيارتك</h1>
+            <p class="sell-car-subtitle">أدخل معلومات سيارتك لنشر إعلان بيع جديد</p>
+        </div>
+
+        <form id="sellCarForm">
+            <!-- Ad Title -->
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-field-label">
+                        <label for="carTitle">عنوان الإعلان</label>
+                        <i class="fas fa-heading"></i>
+                    </div>
+                    <input type="text" id="carTitle" name="carTitle" class="form-input" placeholder="مثال: تويوتا كامري 2023 بحالة ممتازة" required>
+                </div>
+            </div>
+            <!-- Basic Car Information -->
+            <div class="car-form-section">
+                <h2 class="section-title">معلومات السيارة الأساسية</h2>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carMake">الشركة المصنعة</label>
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <select id="carMake" name="carMake" class="form-select" required>
+                            <option value="" selected disabled>اختر الشركة المصنعة</option>
+                            <!-- سيتم ملء هذه القائمة ديناميكياً عبر JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carModel">الطراز</label>
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                        <select id="carModel" name="carModel" class="form-select" required>
+                            <option value="" selected disabled>اختر الطراز</option>
+                            <!-- سيتم ملء الطرازات ديناميكياً -->
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carYear">سنة الصنع</label>
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <select id="carYear" name="carYear" class="form-select" required>
+                            <option value="" selected disabled>اختر سنة الصنع</option>
+                            <!-- سيتم ملء هذه القائمة ديناميكياً عبر JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carMileage">المسافة المقطوعة (كم)</label>
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <input type="number" id="carMileage" name="carMileage" class="form-input" placeholder="المسافة بالكيلومتر" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carPrice">السعر (ر.س)</label>
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <input type="number" id="carPrice" name="carPrice" class="form-input" placeholder="أدخل السعر بالريال السعودي" required>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carLocation">المدينة/الموقع</label>
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <input type="text" id="carLocation" name="carLocation" class="form-input" placeholder="مثل: الرياض، جدة، الدمام" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="carColor">اللون</label>
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <input type="text" id="carColor" name="carColor" class="form-input" placeholder="مثال: أبيض، أسود، أزرق" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="fuelType">نوع الوقود</label>
+                            <i class="fas fa-gas-pump"></i>
+                        </div>
+                        <select id="fuelType" name="carFuel" class="form-select" required>
+                            <option value="" selected disabled>اختر نوع الوقود</option>
+                            <option value="petrol">بنزين</option>
+                            <option value="diesel">ديزل</option>
+                            <option value="hybrid">هجين</option>
+                            <option value="electric">كهربائي</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="condition">الحالة</label>
+                            <i class="fas fa-car-crash"></i>
+                        </div>
+                        <select id="condition" class="form-select" required>
+                            <option value="" selected disabled>اختر حالة السيارة</option>
+                            <option value="new">جديدة</option>
+                            <option value="excellent">ممتازة</option>
+                            <option value="good">جيدة</option>
+                            <option value="fair">مقبولة</option>
+                            <option value="poor">سيئة</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="transmission">ناقل الحركة</label>
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <select id="transmission" name="carTransmission" class="form-select" required>
+                            <option value="" selected disabled>اختر نوع ناقل الحركة</option>
+                            <option value="automatic">أوتوماتيك</option>
+                            <option value="manual">يدوي</option>
+                            <option value="cvt">CVT</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="doors">عدد الأبواب</label>
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <select id="doors" class="form-select" required>
+                            <option value="" selected disabled>اختر عدد الأبواب</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="customsNumber">الرقم الجمركي (اختياري)</label>
+                            <i class="fas fa-barcode"></i>
+                        </div>
+                        <input type="text" id="customsNumber" class="form-input" placeholder="أدخل الرقم الجمركي إن وجد">
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="seats">عدد المقاعد</label>
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <select id="seats" class="form-select" required>
+                            <option value="" selected disabled>اختر عدد المقاعد</option>
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9+">9+</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Car Details -->
+            <div class="car-form-section">
+                <h2 class="section-title">تفاصيل السيارة</h2>
+                
+                <div class="form-group">
+                    <label for="carDescription" class="form-label">وصف السيارة</label>
+                    <textarea id="carDescription" name="carDescription" class="form-textarea" placeholder="اكتب وصفاً تفصيلياً للسيارة، بما في ذلك المميزات والعيوب إن وجدت" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">المميزات</label>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-check">
+                                <input type="checkbox" id="feature1" class="form-check-input">
+                                <label for="feature1" class="form-check-label">مكيف هواء</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature2" class="form-check-input">
+                                <label for="feature2" class="form-check-label">نظام ملاحة</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature3" class="form-check-input">
+                                <label for="feature3" class="form-check-label">كاميرا خلفية</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature4" class="form-check-input">
+                                <label for="feature4" class="form-check-label">مقاعد جلدية</label>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-check">
+                                <input type="checkbox" id="feature5" class="form-check-input">
+                                <label for="feature5" class="form-check-label">نظام صوتي متطور</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature6" class="form-check-input">
+                                <label for="feature6" class="form-check-label">فتحة سقف</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature7" class="form-check-input">
+                                <label for="feature7" class="form-check-label">مثبت سرعة</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" id="feature8" class="form-check-input">
+                                <label for="feature8" class="form-check-label">بلوتوث</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Car Images -->
+            <div class="car-form-section">
+                <h2 class="section-title">صور السيارة</h2>
+                
+                <div class="upload-container" id="imageUpload">
+                    <button type="button" id="uploadImagesBtn" class="btn btn-primary"><i class="fas fa-cloud-upload-alt"></i> رفع الصور</button>
+                    <span id="imageCount" style="margin-right: 10px; color: #1976d2;">0/10</span>
+                </div>
+                <div class="preview-images" id="imagePreviewContainer">
+                    <!-- سيتم إضافة الصور هنا ديناميكياً -->
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="car-form-section">
+                <h2 class="section-title">معلومات الاتصال</h2>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="contactName">الاسم</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <input type="text" id="contactName" name="contactName" class="form-input" placeholder="أدخل اسمك الكامل" required>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="contactPhone">رقم الهاتف</label>
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <input type="tel" id="contactPhone" name="contactPhone" class="form-input" placeholder="أدخل رقم هاتفك" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="contactEmail">البريد الإلكتروني</label>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <input type="email" id="contactEmail" name="contactEmail" class="form-input" placeholder="أدخل بريدك الإلكتروني" required>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-label">
+                            <label for="contactPreference">طريقة التواصل المفضلة</label>
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+                        <select id="contactPreference" class="form-select" required>
+                            <option value="" selected disabled>اختر طريقة التواصل المفضلة</option>
+                            <option value="phone">الهاتف</option>
+                            <option value="email">البريد الإلكتروني</option>
+                            <option value="both">كلاهما</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-check">
+                    <input type="checkbox" id="termsAgree" class="form-check-input" required>
+                    <label for="termsAgree" class="form-check-label">أوافق على <a href="#">شروط الاستخدام</a> و<a href="#">سياسة الخصوصية</a></label>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline">إلغاء</button>
+                <button type="submit" class="btn btn-primary">نشر الإعلان</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/sell-car.js"></script>
+    <script type="module" src="js/firebase-api.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+</body>
+</html>

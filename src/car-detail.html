@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل السيارة - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Car Detail Styles */
+        .car-detail-container {
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .car-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .car-detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .car-detail-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .car-detail-location {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 16px;
+            color: var(--dark-gray);
+            margin-bottom: 20px;
+        }
+
+        .car-detail-location i {
+            color: var(--primary-color);
+        }
+
+        /* Image Gallery */
+        .car-gallery {
+            margin-bottom: 30px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 70px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Car Details */
+        .car-info-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .car-info-main {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .car-info-sidebar {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .car-info-section {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .car-info-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .car-spec {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .car-spec-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+
+        .car-spec-content {
+            flex: 1;
+        }
+
+        .car-spec-label {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 2px;
+        }
+
+        .car-spec-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .car-description {
+            line-height: 1.8;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .car-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .car-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .car-feature i {
+            color: var(--primary-color);
+        }
+
+        /* Seller Info */
+        .seller-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .seller-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+        }
+
+        .seller-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .seller-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .seller-type {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+        }
+
+        .seller-contact {
+            margin-bottom: 20px;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .contact-btn.phone {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .contact-btn.phone:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .contact-btn.whatsapp {
+            background-color: #25D366;
+            color: var(--white);
+        }
+
+        .contact-btn.whatsapp:hover {
+            background-color: #128C7E;
+        }
+
+        .contact-btn.email {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--medium-gray);
+        }
+
+        .contact-btn.email:hover {
+            background-color: var(--light-gray);
+        }
+
+        /* Safety Tips */
+        .safety-tips {
+            padding: 15px;
+            background-color: rgba(255, 193, 7, 0.1);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .safety-tips-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .safety-tips-title i {
+            color: #FFC107;
+        }
+
+        .safety-tips-list {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .safety-tips-list li {
+            margin-bottom: 5px;
+            padding-right: 15px;
+            position: relative;
+        }
+
+        .safety-tips-list li::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: #FFC107;
+        }
+
+        /* Similar Cars */
+        .similar-cars-section {
+            margin-top: 40px;
+        }
+
+        .similar-cars-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .similar-cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .car-detail-header {
+                flex-direction: column;
+            }
+
+            .car-detail-price {
+                margin-top: 10px;
+            }
+
+            .main-image {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Car Detail Section -->
+    <section class="car-detail-container">
+        <div class="car-detail-header">
+            <div>
+                <h1 class="car-detail-title" id="carTitle"></h1>
+                <div class="car-detail-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="carLocation"></span>
+                </div>
+            </div>
+            <div class="car-detail-price" id="carPrice"></div>
+        </div>
+
+        <!-- Car Gallery -->
+        <div class="car-gallery">
+            <div class="main-image">
+                <img src="" alt="صورة السيارة" id="mainImage">
+            </div>
+            <div class="thumbnail-container" id="thumbnails"></div>
+        </div>
+
+        <!-- Car Info -->
+        <div class="car-info-container">
+            <div class="car-info-main">
+                <!-- Car Specifications -->
+                <div class="car-info-section">
+                    <h2 class="car-info-title">مواصفات السيارة</h2>
+                    <ul class="car-specs" id="carSpecs"></ul>
+                </div>
+
+                <!-- Car Description -->
+                <div class="car-info-section">
+                    <h2 class="car-info-title">وصف السيارة</h2>
+                    <div class="car-description" id="carDescription"></div>
+                </div>
+
+                <!-- Car Features -->
+                <div class="car-info-section" id="featuresSection">
+                    <h2 class="car-info-title">المميزات</h2>
+                    <ul class="car-features" id="carFeatures"></ul>
+                </div>
+            </div>
+
+            <div class="car-info-sidebar">
+                <!-- Seller Info -->
+                <div class="car-info-section">
+                    <h2 class="car-info-title">معلومات البائع</h2>
+                    <div class="seller-info">
+                        <div class="seller-avatar">
+                            <img src="images/seller-avatar.jpg" alt="صورة البائع" id="sellerAvatar">
+                        </div>
+                        <h3 class="seller-name" id="sellerName"></h3>
+                        <div class="seller-type" id="sellerType"></div>
+                    </div>
+                    <div class="seller-contact">
+                        <a href="#" class="contact-btn phone" id="sellerPhone">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>اتصل الآن</span>
+                        </a>
+                        <a href="#" class="contact-btn whatsapp" id="sellerWhatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>واتساب</span>
+                        </a>
+                        <a href="#" class="contact-btn email" id="sellerEmail">
+                            <i class="fas fa-envelope"></i>
+                            <span>إرسال بريد إلكتروني</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Safety Tips -->
+                <div class="car-info-section">
+                    <div class="safety-tips">
+                        <div class="safety-tips-title">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>نصائح للسلامة</span>
+                        </div>
+                        <ul class="safety-tips-list">
+                            <li>تحقق من السيارة شخصياً قبل الشراء</li>
+                            <li>قابل البائع في مكان عام وآمن</li>
+                            <li>افحص السيارة لدى فني موثوق</li>
+                            <li>تأكد من صحة الأوراق والمستندات</li>
+                            <li>لا تدفع مقدماً قبل رؤية السيارة</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Report Ad -->
+                <div class="car-info-section">
+                    <a href="#" class="form-link">
+                        <i class="fas fa-flag"></i>
+                        <span>الإبلاغ عن هذا الإعلان</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Cars -->
+        <div class="similar-cars-section">
+            <h2 class="similar-cars-title">سيارات مشابهة</h2>
+            <div class="similar-cars-grid" id="similarCars"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/car-detail.js"></script>
+    <script>
+        // Gallery functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            const mainImage = document.getElementById('mainImage');
+
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Update main image
+                    const imgSrc = this.getAttribute('data-src');
+                    mainImage.src = imgSrc;
+
+                    // Update active thumbnail
+                    thumbnails.forEach(thumb => thumb.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+    
+    <a href="sell.html" class="btn btn-outline" id="sellCarNavBtn" style="display: none;">بيع سيارتك</a>
+    <a href="sell.html" class="btn btn-outline" id="sellCarCtaBtn" style="display: none;">بيع سيارتك</a>
+</body>
+</html>

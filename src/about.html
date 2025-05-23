@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عن Syautobazar - موقع بيع وشراء السيارات</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+       body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #f8fafd;
+      margin: 0;
+      padding: 0;
+      color: #0a1128;
+    }
+    .container {
+      max-width: 1100px;
+            margin: 40px auto;
+      padding: 0 20px;
+        }
+    .section-title {
+            text-align: center;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0a1128;
+      letter-spacing: 1px;
+    }
+    .section-underline {
+      width: 80px;
+      height: 5px;
+      background: #0099e5;
+      margin: 0 auto 40px auto;
+            border-radius: 3px;
+        }
+    .about-box {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 32px 28px;
+      margin-bottom: 40px;
+      text-align: right;
+    }
+    .about-box h2 {
+      color: #0a1128;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+    .about-box p {
+      font-size: 1.15rem;
+      line-height: 2;
+      margin: 0;
+    }
+    .about-columns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .about-col {
+      flex: 1 1 320px;
+      background: #f2f7fb;
+      border-radius: 14px;
+      padding: 24px 18px;
+      min-width: 260px;
+      text-align: right;
+    }
+    .about-col h3 {
+      color: #0099e5;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .about-col p {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+        .stats-section {
+            background-color: var(--primary-color);
+            padding: 60px 0;
+            margin-bottom: 60px;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+            color: var(--white);
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .testimonials-section {
+            margin-bottom: 60px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .testimonial-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            position: relative;
+        }
+
+        .testimonial-quote {
+            font-size: 24px;
+            color: var(--primary-color);
+            opacity: 0.2;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            color: var(--text-color);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .testimonial-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .testimonial-info {
+            flex: 1;
+        }
+
+        .testimonial-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .testimonial-role {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+
+        .cta-section {
+            background-color: var(--light-gray);
+            padding: 60px 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 60px;
+        }
+
+        .cta-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .cta-text {
+            font-size: 18px;
+            color: var(--dark-gray);
+            max-width: 800px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .about-header {
+                margin-bottom: 30px;
+            }
+
+            .about-title {
+                font-size: 28px;
+            }
+
+            .about-subtitle {
+                font-size: 16px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 36px;
+            }
+
+            .stat-label {
+                font-size: 16px;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    .features-section {
+      background: #fafbfc;
+      border-radius: 18px;
+      padding: 32px 28px;
+      margin-bottom: 40px;
+    }
+    .features-title {
+      color: #0a1128;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 24px;
+      text-align: right;
+    }
+    .features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .features-list li {
+      display: flex;
+      align-items: center;
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      color: #0a1128;
+    }
+    .features-list li:last-child {
+      margin-bottom: 0;
+    }
+    .checkmark {
+      width: 28px;
+      height: 28px;
+      background: #e6f4ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 14px;
+    }
+    .checkmark svg {
+      color: #0099e5;
+      width: 18px;
+      height: 18px;
+    }
+    @media (max-width: 800px) {
+      .about-columns {
+        flex-direction: column;
+      }
+      .container {
+        padding: 0 8px;
+      }
+    }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Syautobazar</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html">الرئيسية</a></li>
+                    <li><a href="search.html">بحث</a></li>
+                    <li><a href="sell.html">بيع سيارتك</a></li>
+                    <li><a href="about.html" class="active">عن Syautobazar</a></li>
+                    <li><a href="contact.html">اتصل بنا</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
+                    <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+    <!-- Hero Section -->
+    <div class="about-box" style="text-align:center;">
+      <h1 class="section-title">من نحن</h1>
+      <div class="section-underline"></div>
+      <h2 style="color:#0099e5; font-size:1.4rem; margin-bottom:12px;">مرحبًا بك في Syautobazar</h2>
+      <p>
+        مرحبًا بك في Syautobazar، Syautobazar الإلكترونية المتخصصة في عرض وبيع السيارات بكل سهولة وموثوقية. نحن نوفّر بيئة رقمية متكاملة تتيح للبائعين عرض سياراتهم بجميع التفاصيل والصور، وللمشترين تصفح العروض، المقارنة، والتواصل مباشرة مع المالكين.
+      </p>
+        </div>
+
+    <!-- Columns Section -->
+    <div class="about-columns">
+      <div class="about-col">
+        <h3>مهمتنا</h3>
+        <p>
+          هدفنا هو تبسيط تجربة بيع وشراء السيارات، من خلال واجهة سهلة الاستخدام، أدوات بحث ذكية، ومحتوى واضح وشفاف.
+        </p>
+            </div>
+      <div class="about-col">
+        <h3>رؤيتنا</h3>
+        <p>
+          سواء كنت تبحث عن سيارة جديدة أو مستعملة، أو ترغب في بيع سيارتك بأسرع وقت، فأنت في المكان الصحيح.
+        </p>
+            </div>
+        </div>
+
+    <!-- Slogan Section -->
+    <div class="about-box" style="text-align:center;">
+      <p style="font-size:1.2rem; color:#0a1128;">
+        Syautobazar هي الرابط الذكي بين البائع والمشتري، تجمع السيارات في مكان واحد... بثقة وسرعة.
+      </p>
+        </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <div class="features-title">تميّزنا</div>
+      <ul class="features-list">
+        <li>
+          <span class="checkmark">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 010 1.414l-7.071 7.071a1 1 0 01-1.414 0l-3.536-3.535a1 1 0 111.414-1.415l2.829 2.829 6.364-6.364a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </span>
+          منصة سهلة الاستخدام وبواجهة مبسطة
+        </li>
+        <li>
+          <span class="checkmark">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 010 1.414l-7.071 7.071a1 1 0 01-1.414 0l-3.536-3.535a1 1 0 111.414-1.415l2.829 2.829 6.364-6.364a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </span>
+          أدوات بحث متقدمة للعثور على السيارة المثالية
+        </li>
+        <li>
+          <span class="checkmark">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 010 1.414l-7.071 7.071a1 1 0 01-1.414 0l-3.536-3.535a1 1 0 111.414-1.415l2.829 2.829 6.364-6.364a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </span>
+          تواصل مباشر بين البائعين والمشترين
+        </li>
+        <li>
+          <span class="checkmark">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 010 1.414l-7.071 7.071a1 1 0 01-1.414 0l-3.536-3.535a1 1 0 111.414-1.415l2.829 2.829 6.364-6.364a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </span>
+          معلومات موثوقة وشفافة عن جميع المركبات
+        </li>
+      </ul>
+            </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="testimonials-section container">
+            <h2 class="section-title">آراء عملائنا</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    <p class="testimonial-text">منصة Syautobazar سهلت علي بيع سيارتي بشكل كبير. خلال أسبوع واحد فقط، تلقيت العديد من العروض واستطعت بيع سيارتي بسعر جيد. أنصح بها بشدة لكل من يرغب في بيع سيارته بسرعة وسهولة.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="images/testimonial1.jpg" alt="خالد محمد">
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">خالد محمد</div>
+                            <div class="testimonial-role">بائع سيارة</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    <p class="testimonial-text">كنت أبحث عن سيارة مستعملة بمواصفات محددة، ووجدت ضالتي في منصة Syautobazar. أدوات البحث المتقدمة ساعدتني في العثور على السيارة المناسبة بسرعة، والتواصل المباشر مع البائع وفر علي الكثير من الوقت والجهد.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="images/testimonial2.jpg" alt="سمر أحمد">
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">سمر أحمد</div>
+                            <div class="testimonial-role">مشترية سيارة</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-quote">
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    <p class="testimonial-text">كوكيل سيارات، وجدت في منصة Syautobazar فرصة رائعة لعرض سياراتنا للبيع. الاشتراك في الباقة المميزة منحنا ظهوراً أكبر وزاد من مبيعاتنا بشكل ملحوظ. فريق الدعم متعاون للغاية ويستجيب بسرعة لأي استفسارات.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            <img src="images/testimonial3.jpg" alt="فادي عبدالله">
+                        </div>
+                        <div class="testimonial-info">
+                            <div class="testimonial-name">فادي عبدالله</div>
+                            <div class="testimonial-role">وكيل سيارات</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2 class="cta-title">ابدأ الآن مع Syautobazar</h2>
+            <p class="cta-text">سواء كنت ترغب في بيع سيارتك أو البحث عن سيارة جديدة، منصة Syautobazar هي الخيار الأمثل. انضم إلينا اليوم واستفد من جميع المميزات التي نقدمها.</p>
+            <div class="cta-buttons">
+                <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
+                <a href="search.html" class="btn btn-outline">تصفح السيارات</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3 class="footer-title">Syautobazar</h3>
+                    <p>منصة Syautobazar هي الوجهة الأمثل لبيع وشراء السيارات في الجمهورية العربية السورية. توفر تجربة سهلة وآمنة للمستخدمين مع مجموعة واسعة من الخيارات.</p>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">الرئيسية</a></li>
+                        <li><a href="search.html">بحث السيارات</a></li>
+                        <li><a href="sell.html">بيع سيارتك</a></li>
+                        <li><a href="about.html">عن Syautobazar</a></li>
+                        <li><a href="contact.html">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">اتصل بنا</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>الجمهورية العربية السورية</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>هاتف/واتس آب: +963-11-1234567</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@syautobazar.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3 class="footer-title">تابعنا</h3>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 Syautobazar. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    // Hide 'Create Account' button in CTA if user is logged in
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctaCreateBtn = document.querySelector('.cta-section .btn.btn-primary');
+        if (!ctaCreateBtn) return;
+        try {
+            const auth = getAuth();
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    ctaCreateBtn.style.display = 'none';
+                }
+            });
+        } catch (e) {
+            // If Firebase is not available, do nothing
+        }
+    });
+    </script>
+</body>
+</html>
