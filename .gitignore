@@ -22,4 +22,7 @@ Thumbs.db
 
 # Tests (optional)
 test/
-__tests__/ 
+__tests__/
+
+# Service account key
+src/js/serviceAccountKey.json 
