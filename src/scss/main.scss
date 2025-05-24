@@ -1,8 +1,8 @@
 // Main SCSS file
-@import 'variables';
-@import 'base';
-@import 'components';
-@import 'layout';
+@use 'variables' as *;
+@use 'base';
+@use 'components';
+@use 'layout';
 
 // Variables
 $primary-color: #007bff;

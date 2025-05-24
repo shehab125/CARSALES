@@ -9,7 +9,7 @@
     "dev": "nodemon server.js",
     "build": "npm install && npm run build:css && npm run copy-files",
     "build:css": "sass src/scss/main.scss:public/css/main.css --style compressed",
-    "copy-files": "cp -r public/* dist/ && cp -r src/js/* dist/js/ && cp -r src/images/* dist/images/",
+    "copy-files": "mkdir -p dist/js dist/images && cp -r public/* dist/ && cp -r src/js/* dist/js/ && cp -r src/images/* dist/images/",
     "preview": "vite preview"
   },
   "dependencies": {
