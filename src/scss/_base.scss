@@ -1,0 +1,22 @@
+// Base styles
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: $light-color;
+}
+
+a {
+    text-decoration: none;
+    color: $primary-color;
+    
+    &:hover {
+        color: darken($primary-color, 10%);
+    }
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+} 

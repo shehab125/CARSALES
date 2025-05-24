@@ -8,7 +8,7 @@
     "server": "nodemon server.js",
     "dev": "nodemon server.js",
     "build": "npm install && npm run build:css",
-    "build:css": "sass src/scss:public/css --style compressed",
+    "build:css": "sass src/scss/main.scss:public/css/main.css --style compressed",
     "preview": "vite preview"
   },
   "dependencies": {
