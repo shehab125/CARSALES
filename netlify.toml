@@ -1,17 +1,9 @@
 [build]
-  base = "."
   command = "npm run build"
   publish = "dist"
-  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-  FIREBASE_PROJECT_ID = "gig2-b4dfb"
-  FIREBASE_PRIVATE_KEY_ID = "1f8ab6f989281da3e326fe5d3132cf1934f372ac"
-  FIREBASE_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDaVwyMO5y4D9Sx\nh7YHzdJzWURgsWZV4jlHOPQnWad7XoEIeE4KG36yywFoMJxrI8PohDxnhWlRRGB0\nczy/tnm7F1KuyOhiwFGQQmNNZCXDTQXW5Gv8uk4ZLfR+3PJsjMNR/q9uksuraQiH\n6PGaZsfUdujGRKkviwhztKRLrlJR5GmsdHvmALI8U9+h6GeX28EnGRUXu8cf35iS\nop2rx6JtT7y8Ga5eZdRO07fBk9tnsVaLgqW2sM+pgO2tK/XFLC3p7p6eZYcHjhVb\nOf8yaSIk34IgkXUU0vznY3vdooUPSGzwvxUFZT1yH9+O7Sk/gmb/AQoRdKeOk/ml\nD1tenLEVAgMBAAECggEADzEfXmKHdQck9XVL5R8dFYmQiGnPhQpIkfwUgOhsDtl0\ngPJd+7YOCsK1Rlqbh5jleLg6u7k8qrrnOzMJdw1rSulEh4TTJovbIP59ilT9i6lA\nTsN2AA+2f2oDKRCWjZb9wCbIbhkosrSMM2ix5txf6xia+bCtVPGHlQVsqRdoAuqQ\nul6zEg1Si/D8TxhpeSbmSRKfZr8pT432DRaXxOWKvt3+uk4qYUwULs9bmT8Q4+0T\n1XiHC5iap1NN8Xa+gdV+ql5ArBSWHyjc2PqUxAS/NeRKp1eGj+YTIgxuUNgqO/rF\nJh1pZDXQimeQT2VD1dH40GJ2TlTrydfROXEt/doWAQKBgQD65FNyt1jVAkFse26F\nRE6Ui8eNN5CJ8qBATAQ315CiXL/RP9AV0gizoGGrxtGkSCtdVkd9JgiEILWLpLfZ\nYLX4Rzkt3/TgxHvBhuTw252/Wbe//YSJSeOHToMBw1XHQFjuHivqE11XQPVP7hUG\nxiSvpemLc2AAAf5xhWPE56zATQKBgQDeyQ8281l1aJUhZ8hy2ypmGJKggCMmyu4w\nIfqk9ZnTzZnvgr/muc/LopHMnon0fCgeyotMQ22O6B+FsfV1vEPhNUu50ef+FGt6\nWcD43BlaHLL0rw3v3fzDSdsRKTTD3QbJU8dLMPPe/mjWMvIAnd4989rvwHtidCEJ\nZn8oCOXX6QKBgQCDvdMnwKjPqRCLk0DUj6qni8JsH8ow9Ys6V/A7FmFnMEa07Moq\nOxDAqa2/0nWQyyiiKUT+rTL5lmdd/U9gwMyso1GeCiR+xg2p8FhVNSzfJpA7Kzcm\nE/t6uDpIebaYGuzXlFZA4ow33e8yWnUGCpOG/BrnU90MBAAEwiNCaNioXQKBgQC1\nukZZ6alYd2XmqPS+k/6C55p7p+qEk1Y2FxGQi/Ld7cGauQn2mC1ji4no4o3fy4Mi\nks+L9xigUMKd2StDzb2FMGdD/XCDNn7xf9NEbK2VbwGfTEhPGMI9PrqexgEPn/UQ\nNvHDaPwVM2urBkWXsS7/VDKMDXPYPKhSNbSVoKR0OQKBgQDcJZRk0D/bBjA8NRlF\nZ5oV69lfX2JPOnq60DN0ugXnC5rhlM3qpXzyOcAIg1dLlEAIZp7CLH7hzG/PJAHP\nwfUizYf6ws20rV+vJxiqdCEtnc8W6vEeV2ekDojA4/zdGrYBRVpEKKioKTafetGM\nUbaog+bVDUv8tfSeqa5LOirlvw==\n-----END PRIVATE KEY-----\n"
-  FIREBASE_CLIENT_EMAIL = "firebase-adminsdk-fbsvc@gig2-b4dfb.iam.gserviceaccount.com"
-  FIREBASE_CLIENT_ID = "107679221278354702376"
-  FIREBASE_CLIENT_CERT_URL = "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40gig2-b4dfb.iam.gserviceaccount.com"
 
 [[redirects]]
   from = "/*"
