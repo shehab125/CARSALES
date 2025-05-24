@@ -561,15 +561,9 @@ async function setupRealtimeUpdates() {
                     <td data-label="الصلاحية">${roleStatus}</td>
                     <td data-label="الإجراءات">
                         <div class="table-actions">
-                            <a href="#" class="table-action view" title="عرض" data-id="${user.id}">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="#" class="table-action edit" title="تعديل" data-id="${user.id}">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="#" class="table-action delete" title="حذف" data-id="${user.id}">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <a href="#" class="table-action view view-user-btn" title="عرض" data-id="${user.id}"><i class="fas fa-eye"></i></a>
+                            <button class="table-action edit edit-user-btn" title="تعديل" data-id="${user.id}"><i class="fas fa-edit"></i></button>
+                            <button class="table-action delete delete-user-btn" title="حذف" data-id="${user.id}"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
                 `;

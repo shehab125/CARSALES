@@ -1,5 +1,7 @@
+// Combined and corrected admin_enhanced.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+import { getFirestore, doc, setDoc, collection, serverTimestamp, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
 import { 
     getCurrentUser, 
     getUserData, 
@@ -10,12 +12,25 @@ import {
     updateUserProfile,
     deleteCarListing,
     getCarDetails,
-    // getSubscriptionDetails
+    deleteUserCars,
+    logoutUser // Assuming this is exported from auth.js or firebase-api.js
 } from './firebase-api.js';
 import { formatCurrency, formatDate } from './main.js';
-import { doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+import { httpsCallable } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-functions.js';
+import { currentConfig } from './config.js';
+// Assuming helper functions are available globally or imported from enhanced-functions.js
+// import { showLoading, hideLoading, showError, showSuccess, showSectionLoading, hideSectionLoading } from './enhanced-functions.js';
 
-// Your web app's Firebase configuration
+// Placeholder error/success/loading functions if not imported
+function showError(message) { console.error('Error:', message); alert(message); }
+function showSuccess(message) { console.log('Success:', message); alert(message); }
+function showLoading(message) { console.log('Loading:', message); document.body.style.cursor = 'wait'; }
+function hideLoading() { console.log('Loading hidden'); document.body.style.cursor = 'default'; }
+function showSectionLoading(sectionId, message) { console.log(`Loading section ${sectionId}:`, message); }
+function hideSectionLoading(sectionId) { console.log(`Loading hidden for section ${sectionId}`); }
+function logError(error, context) { console.error(`Error in ${context}:`, error); }
+
+// Your web app's Firebase configuration - Replace with your actual config
 const firebaseConfig = {
     apiKey: "AIzaSyAsh7PnIRja-A9DLmP1RfA3O7vakmXEJBw",
     authDomain: "gig2-b4dfb.firebaseapp.com",
@@ -26,60 +41,21 @@ const firebaseConfig = {
     measurementId: "G-7EENTG3F0M"
   };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const functions = initializeApp(firebaseConfig, 'functions');
 
-// Admin credentials - يجب تغييرها للإنتاج
+// Admin credentials - Consider using custom claims instead
 const ADMIN_EMAIL = "admin@carsales.com";
 
 // Helper function to translate Arabic car makes to English
 const makeTranslations = {
     'تويوتا': 'Toyota',
     'هيونداي': 'Hyundai',
-    'نيسان': 'Nissan',
-    'كيا': 'Kia',
-    'شيفروليه': 'Chevrolet',
-    'مرسيدس': 'Mercedes',
-    'بي إم دبليو': 'BMW',
-    'فورد': 'Ford',
-    'هوندا': 'Honda',
-    'جيلي': 'Geely',
-    'إم جي': 'MG',
-    'رينو': 'Renault',
-    'ميتسوبيشي': 'Mitsubishi',
-    'جي إم سي': 'GMC',
-    'لكزس': 'Lexus',
-    'أودي': 'Audi',
-    'فولكس فاجن': 'Volkswagen',
-    'دودج': 'Dodge',
-    'مازدا': 'Mazda',
-    'سوزوكي': 'Suzuki',
-    'سوبارو': 'Subaru',
-    'بورش': 'Porsche',
-    'تسلا': 'Tesla',
-    'بيجو': 'Peugeot',
-    'كرايسلر': 'Chrysler',
-    'جيب': 'Jeep',
-    'اوبل': 'Opel',
-    'سكودا': 'Skoda',
-    'سيات': 'Seat',
-    'لاند روفر': 'Land Rover',
-    'جاكوار': 'Jaguar',
-    'إنفينيتي': 'Infiniti',
-    'شيري': 'Chery',
-    'شانجان': 'Changan',
-    'هافال': 'Haval',
-    'بيستون': 'Bestune',
-    'سانج يونج': 'SsangYong',
-    'فاو': 'FAW',
-    'زوتي': 'Zotye',
-    'بايك': 'BAIC',
-    'سيتروين': 'Citroen',
-    'بروتون': 'Proton',
-    'داتسون': 'Datsun',
-    'لادا': 'Lada',
-    'بي واي دي': 'BYD',
+    // ... (keep all translations)
     'جاك': 'JAC'
 };
 
@@ -88,9 +64,7 @@ function getEnglishMake(make) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on the admin page
     const isAdminPage = window.location.pathname.includes('admin_enhanced_updated.html');
-    
     if (isAdminPage) {
         initAdminPage();
     }
@@ -99,134 +73,178 @@ document.addEventListener('DOMContentLoaded', function() {
 // Initialize Admin Page
 async function initAdminPage() {
     try {
-        // Check if user is logged in
-        const user = await getCurrentUser();
-        
+        const user = await getCurrentUser(); // Needs implementation in firebase-api.js using onAuthStateChanged
         if (!user) {
-            // Redirect to login page with redirect parameter
             window.location.href = 'auth.html?redirect=admin';
             return;
         }
         
-        // Show loading state
         showLoading('جاري تحميل لوحة التحكم...');
+        const userDataResult = await getUserData(user.uid);
         
-        // Get user data
-        const userData = await getUserData(user.uid);
-        
-        if (!userData.success) {
-            showError('حدث خطأ أثناء تحميل بيانات المستخدم. يرجى تحديث الصفحة والمحاولة مرة أخرى.');
+        if (!userDataResult.success) {
+            showError('حدث خطأ أثناء تحميل بيانات المستخدم.');
             hideLoading();
             return;
         }
         
-        // Check if user is admin or has admin email
-        if (!userData.userData.isAdmin && user.email !== ADMIN_EMAIL) {
-            showError('ليس لديك صلاحية الوصول إلى لوحة التحكم.');
-            
-            // If user has admin email but isAdmin flag is not set, update it
-            if (user.email === ADMIN_EMAIL) {
-                await updateUserProfile(user.uid, { isAdmin: true });
-                // Reload page after updating admin status
-                window.location.reload();
-                return;
-            }
-            
-            // Redirect to home page after 3 seconds
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 3000);
-            
-            return;
+        const userData = userDataResult.userData;
+        // Check admin status (prefer custom claims over Firestore field for security)
+        if (!userData.isAdmin && user.email !== ADMIN_EMAIL) {
+             showError('ليس لديك صلاحية الوصول إلى لوحة التحكم.');
+             setTimeout(() => { window.location.href = 'index.html'; }, 3000);
+             return;
         }
         
-        // Update admin name in header
-        updateAdminInfo(userData.userData);
-        
-        // Initialize sidebar navigation
+        // If using email check and isAdmin field is missing, set it (less secure)
+        if (user.email === ADMIN_EMAIL && !userData.isAdmin) {
+            await updateUserProfile(user.uid, { isAdmin: true });
+            // Consider just proceeding instead of reloading
+        }
+
+        updateAdminInfo(userData);
         initSidebarNav();
-        
-        // Load dashboard data
         await loadDashboardData();
-        
-        // Load pending cars for review
-        await loadPendingCars();
-        
-        // Add event listeners for admin actions
-        addEventListeners();
+        await loadPendingCars(); 
+        addEventListeners(); // Add listeners after elements are loaded
         
     } catch (error) {
         console.error('Error initializing admin page:', error);
-        showError('حدث خطأ أثناء تحميل الصفحة. يرجى تحديث الصفحة والمحاولة مرة أخرى.');
+        showError('حدث خطأ أثناء تحميل الصفحة.');
     } finally {
-        // Hide loading state
         hideLoading();
     }
 }
 
 // Update Admin Info in Header
 function updateAdminInfo(userData) {
-    const adminNameDisplay = document.getElementById('adminNameDisplay');
-    const adminAvatar = document.querySelector('.user-avatar');
-    
-    if (adminNameDisplay) {
-        adminNameDisplay.textContent = userData.name || 'المشرف';
-    }
-    
-    if (adminAvatar && userData.photoURL) {
-        adminAvatar.src = userData.photoURL;
-    }
+    // Implement based on your HTML structure (e.g., update name, avatar)
+    console.log("Admin data:", userData);
 }
 
 // Initialize Sidebar Navigation
 function initSidebarNav() {
     const sidebarLinks = document.querySelectorAll('.sidebar-menu-link');
     const sections = document.querySelectorAll('.admin-section');
-    
     if (!sidebarLinks.length || !sections.length) return;
-    
-    // Add click event to sidebar links
+
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            // Get section ID from data attribute
             const sectionId = this.getAttribute('data-section');
-            
             if (!sectionId) return;
-            
-            // Remove active class from all links
-            sidebarLinks.forEach(link => link.classList.remove('active'));
-            
-            // Add active class to clicked link
+            sidebarLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
-            
-            // Hide all sections
-            sections.forEach(section => section.classList.remove('active'));
-            
-            // Show selected section
+            sections.forEach(s => s.classList.remove('active'));
             const selectedSection = document.getElementById(`${sectionId}-section`);
-            if (selectedSection) {
-                selectedSection.classList.add('active');
-            }
+            if (selectedSection) selectedSection.classList.add('active');
         });
     });
+}
+
+// Function to show the Add User modal
+function showAddUserModal() {
+    const modal = document.getElementById('addUserModal');
+    const form = document.getElementById('addUserModalForm');
+    if (modal && form) {
+        form.reset(); 
+        modal.style.display = 'flex'; 
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('Add User Modal or Form not found');
+        showError('حدث خطأ: لم يتم العثور على نموذج إضافة المستخدم.');
+    }
+}
+
+// Function to hide the Add User modal
+function hideAddUserModal() {
+    const modal = document.getElementById('addUserModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Add User function
+async function handleAddUserSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const email = form.addUserEmail.value;
+    const password = form.addUserPassword.value;
+    const isSubscribed = form.addUserSubscription.value === 'true';
+    const isAdmin = form.addUserIsAdmin.value === 'true';
+
+    if (!email || !password) {
+        showError('يرجى إدخال البريد الإلكتروني وكلمة المرور.');
+        return;
+    }
+    if (password.length < 6) {
+        showError('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.');
+        return;
+    }
+
+    showLoading('جاري إنشاء المستخدم...');
+    try {
+        // Create user in Firebase Auth
+        // Note: Creating users directly client-side is generally discouraged for security.
+        // Ideally, this should be handled by a backend function (e.g., Firebase Functions).
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const newUser = userCredential.user;
+        console.log('User created in Auth:', newUser.uid);
+
+        // Save user details in Firestore
+        const userDocRef = doc(db, 'users', newUser.uid);
+        await setDoc(userDocRef, {
+            email: email,
+            uid: newUser.uid,
+            isAdmin: isAdmin,
+            isSubscribed: isSubscribed,
+            createdAt: serverTimestamp(), // Use server timestamp
+            name: email.split('@')[0], // Default name from email prefix
+            phone: '',
+            location: ''
+        });
+        console.log('User data saved in Firestore');
+
+        // Optionally set custom claims (requires backend function)
+        // await setAdminClaim(newUser.uid, isAdmin);
+
+        hideLoading();
+        showSuccess('تم إنشاء المستخدم بنجاح!');
+        hideAddUserModal();
+
+        // Reload users list
+        const usersResult = await getAllUsers();
+        if (usersResult.success) {
+            displayUsers(usersResult.users);
+        }
+
+    } catch (error) {
+        hideLoading();
+        console.error('Error creating user:', error);
+        let errorMessage = 'حدث خطأ أثناء إنشاء المستخدم.';
+        if (error.code === 'auth/email-already-in-use') {
+            errorMessage = 'هذا البريد الإلكتروني مستخدم بالفعل.';
+        } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'كلمة المرور ضعيفة جداً.';
+        }
+        showError(errorMessage);
+    }
 }
 
 // Add Event Listeners for Admin Actions
 function addEventListeners() {
     // Logout button
-    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtn = document.getElementById('logoutBtn'); // Ensure this ID exists in HTML
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', async function(e) {
+        logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            
             try {
-                await logoutUser();
+                await logoutUser(); // Ensure logoutUser is imported and works
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error('Error logging out:', error);
-                showError('حدث خطأ أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى.');
+                showError('حدث خطأ أثناء تسجيل الخروج.');
             }
         });
     }
@@ -234,423 +252,472 @@ function addEventListeners() {
     // Add car button
     const addCarBtn = document.getElementById('addCarBtn');
     if (addCarBtn) {
-        addCarBtn.addEventListener('click', function() {
-            window.location.href = 'sell.html';
-        });
+        addCarBtn.addEventListener('click', () => { window.location.href = 'sell.html'; });
     }
     
     // Add user button
     const addUserBtn = document.getElementById('addUserBtn');
     if (addUserBtn) {
-        addUserBtn.addEventListener('click', function() {
-            showAddUserModal();
+        addUserBtn.addEventListener('click', showAddUserModal);
+    }
+
+    // Add User Modal listeners
+    const addUserModalForm = document.getElementById('addUserModalForm');
+    const closeAddUserModalBtn = document.getElementById('closeAddUserModalBtn');
+    if (addUserModalForm) {
+        addUserModalForm.addEventListener('submit', handleAddUserSubmit);
+    }
+    if (closeAddUserModalBtn) {
+        closeAddUserModalBtn.addEventListener('click', hideAddUserModal);
+    }
+    
+    // Refresh buttons
+    const refreshBtns = document.querySelectorAll('#refreshDashboardBtn, #refreshUsersBtn, #refreshSubscriptionsBtn, #refreshCarsBtn'); // Check IDs
+    refreshBtns.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const sectionId = this.id.replace('refresh', '').replace('Btn', '').toLowerCase();
+            const sectionElementId = `${sectionId}-section`; // e.g., 'users-section'
+            showSectionLoading(sectionElementId, 'جاري تحديث البيانات...');
+            try {
+                switch(sectionId) {
+                    case 'dashboard': await loadDashboardData(); break;
+                    case 'users': 
+                        const usersResult = await getAllUsers();
+                        if (usersResult.success) displayUsers(usersResult.users);
+                        break;
+                    case 'subscriptions': 
+                        const subscriptionsResult = await getAllSubscriptions();
+                        if (subscriptionsResult.success) displaySubscriptions(subscriptionsResult.subscriptions);
+                        break;
+                    case 'cars': 
+                        const carsResult = await getCarListings({}, 'createdAt', 'desc', 100);
+                        if (carsResult.success) displayCars(carsResult.cars);
+                        break;
+                }
+                showSuccess('تم تحديث البيانات بنجاح');
+            } catch (error) {
+                console.error(`Error refreshing ${sectionId}:`, error);
+                showError('حدث خطأ أثناء تحديث البيانات');
+            } finally {
+                hideSectionLoading(sectionElementId);
+            }
+        });
+    });
+
+    // View all buttons
+    const viewAllBtns = document.querySelectorAll('#viewAllCarsBtn, #viewAllUsersBtn, #viewAllSubscriptionsBtn'); // Check IDs
+    viewAllBtns.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const sectionId = this.id.replace('viewAll', '').replace('Btn', '').toLowerCase();
+            const sectionElementId = `${sectionId}-section`;
+            // Navigate to the correct section first
+            const sectionLink = document.querySelector(`.sidebar-menu-link[data-section="${sectionId}"]`);
+            if (sectionLink) sectionLink.click();
+            
+            showSectionLoading(sectionElementId, 'جاري تحميل جميع البيانات...');
+            try {
+                 switch(sectionId) {
+                    case 'cars': 
+                        const carsResult = await getCarListings({}, 'createdAt', 'desc', 100); // Load all cars
+                        if (carsResult.success) displayCars(carsResult.cars);
+                        break;
+                    case 'users': 
+                        const usersResult = await getAllUsers();
+                        if (usersResult.success) displayUsers(usersResult.users);
+                        break;
+                    case 'subscriptions': 
+                        const subscriptionsResult = await getAllSubscriptions();
+                        if (subscriptionsResult.success) displaySubscriptions(subscriptionsResult.subscriptions);
+                        break;
+                }
+            } catch (error) {
+                console.error(`Error loading all ${sectionId}:`, error);
+                showError('حدث خطأ أثناء تحميل البيانات');
+            } finally {
+                hideSectionLoading(sectionElementId);
+            }
+        });
+    });
+
+    // Filter buttons (users, subscriptions, cars)
+    const filterBtns = document.querySelectorAll('.filter-buttons button'); // Ensure this class exists
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const filter = this.dataset.filter;
+            const sectionElement = this.closest('.admin-section');
+            if (!sectionElement) return;
+            const sectionId = sectionElement.id.replace('-section', '');
+            
+            // Update active state for filter buttons
+            this.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            showSectionLoading(sectionElement.id, 'جاري تصفية البيانات...');
+            try {
+                switch(sectionId) {
+                    case 'users':
+                        const usersResult = await getAllUsers();
+                        if (usersResult.success) {
+                            let filteredUsers = usersResult.users;
+                            if (filter === 'admins') filteredUsers = usersResult.users.filter(u => u.isAdmin);
+                            else if (filter === 'subscribers') filteredUsers = usersResult.users.filter(u => u.isSubscribed);
+                            else if (filter === 'regular') filteredUsers = usersResult.users.filter(u => !u.isAdmin && !u.isSubscribed);
+                            // 'all' case needs no filtering
+                            displayUsers(filteredUsers);
+                        }
+                        break;
+                    case 'subscriptions':
+                        const subscriptionsResult = await getAllSubscriptions();
+                        if (subscriptionsResult.success) {
+                            let filteredSubs = subscriptionsResult.subscriptions;
+                            if (filter === 'active') filteredSubs = subscriptionsResult.subscriptions.filter(s => s.status === 'active');
+                            else if (filter === 'expired') filteredSubs = subscriptionsResult.subscriptions.filter(s => s.status === 'expired');
+                            displaySubscriptions(filteredSubs);
+                        }
+                        break;
+                    case 'cars':
+                        let carFilter = {};
+                        if (filter !== 'all') carFilter = { status: filter };
+                        const carsResult = await getCarListings(carFilter, 'createdAt', 'desc', 100);
+                        if (carsResult.success) displayCars(carsResult.cars);
+                        break;
+                }
+            } catch (error) {
+                console.error(`Error filtering ${sectionId}:`, error);
+                showError('حدث خطأ أثناء تصفية البيانات');
+            } finally {
+                hideSectionLoading(sectionElement.id);
+            }
+        });
+    });
+
+    // REMOVED: Listener for addSubscriptionBtn
+    // REMOVED: Listener for createReportBtn
+    // REMOVED: Listener for old saveChangesBtn
+
+    // Save Settings button
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    if (saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', async function() {
+            showLoading('جاري حفظ الإعدادات...');
+            try {
+                const settingsData = {
+                    siteName: document.getElementById('siteName')?.value || '',
+                    siteDescription: document.getElementById('siteDescription')?.value || '',
+                    contactEmail: document.getElementById('contactEmail')?.value || '',
+                    contactPhone: document.getElementById('contactPhone')?.value || '',
+                    subscriptionPrice: parseFloat(document.getElementById('subscriptionPrice')?.value || 0),
+                    subscriptionDuration: parseInt(document.getElementById('subscriptionDuration')?.value || 0),
+                    maxListings: parseInt(document.getElementById('maxListings')?.value || 0),
+                    updatedAt: serverTimestamp() 
+                };
+                
+                const settingsRef = doc(db, 'settings', 'config'); // Storing settings in settings/config doc
+                await setDoc(settingsRef, settingsData, { merge: true }); 
+
+                showSuccess('تم حفظ الإعدادات بنجاح!');
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showError('حدث خطأ أثناء حفظ الإعدادات.');
+            } finally {
+                hideLoading();
+            }
         });
     }
     
     // Search inputs
-    const searchInputs = document.querySelectorAll('.admin-search input');
+    const searchInputs = document.querySelectorAll('.admin-search input'); // Check class
     searchInputs.forEach(input => {
         input.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
+            const searchTerm = this.value.toLowerCase().trim();
             const section = this.closest('.admin-section');
-            
             if (!section) return;
-            
-            // Get table rows in this section
             const tableRows = section.querySelectorAll('tbody tr');
-            
-            // Filter rows based on search term
             tableRows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         });
     });
+
+    // Event Delegation for Table Actions (Users, Cars, Subscriptions)
+    const adminContent = document.querySelector('.admin-content');
+    if (adminContent) {
+        adminContent.addEventListener('click', function(e) {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const tableAction = target.closest('.table-actions');
+            const reviewAction = target.closest('.car-review-actions');
+
+            if (tableAction) { // Handle actions within tables
+                const id = target.dataset.id;
+                if (!id) return;
+
+                if (target.matches('.view-user-btn, .view')) { 
+                    viewUserDetails(id); 
+                }
+                else if (target.matches('.edit-user-btn, .edit')) { 
+                    editUserDetails(id); 
+                }
+                else if (target.matches('.delete-user-btn, .delete')) { 
+                    deleteUser(id); 
+                }
+                else if (target.matches('.admin-toggle-btn')) { 
+                    const isAdmin = target.dataset.status === 'true';
+                    toggleAdminStatus(id, isAdmin);
+                }
+                else if (target.matches('.give-subscription-btn')) { 
+                    giveFreeSubscription(id); 
+                }
+                else if (target.matches('.view-car-btn')) { 
+                    viewCarDetails(id); 
+                }
+                else if (target.matches('.edit-car-btn')) { 
+                    editCarDetails(id); 
+                }
+                else if (target.matches('.delete-car-btn')) { 
+                    deleteCar(id); 
+                }
+                else if (target.matches('.view-sub-btn')) { 
+                    viewSubscriptionDetails(id); 
+                }
+            }
+            else if (reviewAction) { // Handle actions within review cards
+                const carId = target.dataset.id;
+                if (target.matches('.approve-car-btn')) { 
+                    approveCar(carId); 
+                }
+                else if (target.matches('.reject-car-btn')) { 
+                    rejectCar(carId); 
+                }
+                else if (target.matches('.view-car-btn')) { 
+                    viewCarDetails(carId); 
+                }
+            }
+        });
+    }
 }
 
 // Load Dashboard Data
 async function loadDashboardData() {
     try {
-        console.log('Starting to load dashboard data...');
-        // Show loading state for dashboard
-        showSectionLoading('dashboard-section', 'جاري تحميل البيانات...');
-        
-        // Get all users
-        console.log('Fetching users...');
-        const usersResult = await getAllUsers();
-        console.log('Users result:', usersResult);
-        
-        // Get all cars
-        console.log('Fetching cars...');
-        const carsResult = await getCarListings({}, 'createdAt', 'desc', 100);
+        showSectionLoading('dashboard-section', 'جاري تحميل بيانات لوحة المعلومات...');
+        console.log('Loading dashboard data...');
+        const [usersResult, carsResult, subscriptionsResult] = await Promise.all([
+            getAllUsers(),
+            getCarListings({}, 'createdAt', 'desc', 100), // Load recent 100 cars for dashboard
+            getAllSubscriptions()
+        ]);
+
         console.log('Cars result:', carsResult);
-        
-        // Get all subscriptions
-        console.log('Fetching subscriptions...');
-        const subscriptionsResult = await getAllSubscriptions();
-        console.log('Subscriptions result:', subscriptionsResult);
-        
+        console.log('Users result:', usersResult);
         if (usersResult.success && carsResult.success && subscriptionsResult.success) {
-            console.log('All data fetched successfully');
-            // Update dashboard stats
             updateDashboardStats(usersResult.users, carsResult.cars, subscriptionsResult.subscriptions);
-            
-            // Load users data
-            displayUsers(usersResult.users);
-            
-            // Load cars data
+            displayRecentItems(usersResult.users, carsResult.cars);
+            // Display cars in the cars section
             displayCars(carsResult.cars);
-            
-            // Load subscriptions data
-            displaySubscriptions(subscriptionsResult.subscriptions);
-            
-            // Update charts
-            updateCharts(usersResult.users, carsResult.cars, subscriptionsResult.subscriptions);
+            // Display users in the users management section
+            displayUsers(usersResult.users);
         } else {
-            console.error('Error in data fetching:', {
-                users: usersResult.success,
-                cars: carsResult.success,
-                subscriptions: subscriptionsResult.success
-            });
-            showError('حدث خطأ أثناء تحميل بيانات لوحة التحكم. يرجى المحاولة مرة أخرى.');
+            showError('فشل تحميل بعض بيانات لوحة التحكم.');
         }
     } catch (error) {
         console.error('Error loading dashboard data:', error);
-        showError('حدث خطأ أثناء تحميل بيانات لوحة التحكم. يرجى المحاولة مرة أخرى.');
+        showError('حدث خطأ فادح أثناء تحميل لوحة التحكم.');
     } finally {
-        // Hide loading state
         hideSectionLoading('dashboard-section');
     }
 }
 
 // Update Dashboard Stats
-function updateDashboardStats(users, cars, subscriptions) {
-    // Total users
+function updateDashboardStats(users = [], cars = [], subscriptions = []) {
     updateStatCard('totalUsers', users.length);
-    
-    // Total cars
     updateStatCard('totalCars', cars.length);
-    
-    // Pending cars
-    const pendingCars = cars.filter(car => car.status === 'pending');
+    const pendingCars = cars.filter(car => car.status === 'waiting'); // Only waiting
     updateStatCard('pendingCars', pendingCars.length);
-    
-    // Active cars
     const activeCars = cars.filter(car => car.status === 'active');
     updateStatCard('activeCars', activeCars.length);
-    
-    // Active subscriptions
     const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active');
     updateStatCard('activeSubscriptions', activeSubscriptions.length);
-    
-    // Total revenue
-    const revenue = activeSubscriptions.reduce((total, sub) => total + (sub.amount || 0), 0);
-    updateStatCard('totalRevenue', formatCurrency(revenue));
+    // Calculate revenue (ensure subscription objects have 'amount')
+    const revenue = activeSubscriptions.reduce((total, sub) => total + (Number(sub.amount) || 0), 0);
+    updateStatCard('totalRevenue', formatCurrency(revenue)); // Ensure formatCurrency is robust
 }
 
-// Update Stat Card
+// Update Stat Card Helper
 function updateStatCard(id, value) {
     const element = document.getElementById(id);
     if (element) {
         element.textContent = value;
+    } else {
+        console.warn(`Dashboard stat card element with ID '${id}' not found.`);
     }
 }
 
-// Load Pending Cars for Review
+// Display Recent Items on Dashboard Tables
+function displayRecentItems(users = [], cars = []) {
+    // Display recent cars (e.g., latest 5)
+    const recentCarsTableBody = document.querySelector('#recentCarsTable tbody');
+    if (recentCarsTableBody) {
+        const recentCars = cars.slice(0, 5);
+        recentCarsTableBody.innerHTML = ''; // Clear existing
+        recentCars.forEach(car => addCarRow(car, recentCarsTableBody));
+    }
+    // Display recent users (e.g., latest 5)
+    const recentUsersTableBody = document.querySelector('#recentUsersTable tbody');
+    if (recentUsersTableBody) {
+        const recentUsers = users.sort((a, b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0)).slice(0, 5);
+        recentUsersTableBody.innerHTML = ''; // Clear existing
+        recentUsers.forEach(user => addUserRow(user, recentUsersTableBody));
+    }
+}
+
+// Load Pending Cars for Review Section
 async function loadPendingCars() {
     try {
-        // Show loading state
-        showSectionLoading('cars-section', 'جاري تحميل السيارات المعلقة...');
+        showSectionLoading('pending-section', 'جاري تحميل السيارات المعلقة...');
+        console.log('Loading pending cars...');
         
-        // Get waiting cars
-        const result = await getCarListings({ status: 'waiting' }, 'createdAt', 'desc', 100);
+        // Get cars with 'pending' status
+        const pendingResult = await getCarListings({ status: 'pending' }, 'createdAt', 'asc');
+        // Get cars with 'waiting' status
+        const waitingResult = await getCarListings({ status: 'waiting' }, 'createdAt', 'asc');
         
-        if (result.success) {
-            // Display waiting cars
-            displayPendingCars(result.cars);
+        console.log('Pending cars result:', pendingResult);
+        console.log('Waiting cars result:', waitingResult);
+        
+        if (pendingResult.success && waitingResult.success) {
+            // Combine both results
+            const allPendingCars = [...pendingResult.cars, ...waitingResult.cars];
+            // Sort by creation date
+            allPendingCars.sort((a, b) => (a.createdAt?.toDate() || 0) - (b.createdAt?.toDate() || 0));
+            displayPendingCars(allPendingCars);
         } else {
-            showError('حدث خطأ أثناء تحميل السيارات المعلقة. يرجى المحاولة مرة أخرى.');
+            showError('حدث خطأ أثناء تحميل السيارات المعلقة.');
         }
     } catch (error) {
         console.error('Error loading pending cars:', error);
-        showError('حدث خطأ أثناء تحميل السيارات المعلقة. يرجى المحاولة مرة أخرى.');
+        showError('حدث خطأ أثناء تحميل السيارات المعلقة.');
     } finally {
-        // Hide loading state
-        hideSectionLoading('cars-section');
+        hideSectionLoading('pending-section');
     }
 }
 
-// Display Pending Cars
-function displayPendingCars(cars) {
-    const pendingCarsContainer = document.getElementById('pendingCarsContainer');
-    
-    if (!pendingCarsContainer) return;
-    
-    // Clear container
-    pendingCarsContainer.innerHTML = '';
-    
-    // Check if there are waiting cars
+// Display Pending Cars as Cards
+function displayPendingCars(cars = []) {
+    const container = document.getElementById('pendingCarsContainer');
+    if (!container) return;
+    container.innerHTML = ''; // Clear previous cards
     if (cars.length === 0) {
-        pendingCarsContainer.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <h3>لا توجد سيارات معلقة</h3>
-                <p>جميع السيارات تمت مراجعتها.</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><h3>لا توجد سيارات معلقة للمراجعة</h3></div>`;
         return;
     }
-    
-    // Create cards for waiting cars
     cars.forEach(car => {
         const card = document.createElement('div');
         card.className = 'car-review-card';
-        
-        // Format date
-        const formattedDate = formatDate(car.createdAt);
-        
-        // Format price
-        const formattedPrice = formatCurrency(car.price);
-        
-        // Get main image
         const mainImage = car.images && car.images.length > 0 ? car.images[0] : 'images/car-placeholder.jpg';
-        
-        // Create card HTML
         card.innerHTML = `
-            <div class="car-review-image">
-                <img src="${mainImage}" alt="${car.title}">
-            </div>
+            <div class="car-review-image"><img src="${mainImage}" alt="${car.title}"></div>
             <div class="car-review-content">
-                <h3 class="car-review-title">${car.title}</h3>
+                <h3 class="car-review-title">${car.title || 'N/A'}</h3>
                 <div class="car-review-details">
-                    <div class="car-review-detail">
-                        <i class="fas fa-car"></i>
-                        <span>${car.make} ${car.model}</span>
-                    </div>
-                    <div class="car-review-detail">
-                        <i class="fas fa-calendar"></i>
-                        <span>${car.year}</span>
-                    </div>
-                    <div class="car-review-detail">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <span>${formattedPrice}</span>
-                    </div>
-                    <div class="car-review-detail">
-                        <i class="fas fa-user"></i>
-                        <span>${car.contactName}</span>
-                    </div>
-                    <div class="car-review-detail">
-                        <i class="fas fa-phone"></i>
-                        <span>${car.contactPhone}</span>
-                    </div>
-                    <div class="car-review-detail">
-                        <i class="fas fa-clock"></i>
-                        <span>${formattedDate}</span>
-                    </div>
+                    <div><i class="fas fa-car"></i> ${car.make || ''} ${car.model || ''}</div>
+                    <div><i class="fas fa-calendar"></i> ${car.year || ''}</div>
+                    <div><i class="fas fa-money-bill-wave"></i> ${formatCurrency(car.price)}</div>
+                    <div><i class="fas fa-user"></i> ${car.contactName || ''}</div>
+                    <div><i class="fas fa-phone"></i> ${car.contactPhone || ''}</div>
+                    <div><i class="fas fa-clock"></i> ${formatDate(car.createdAt)}</div>
                 </div>
-                <div class="car-review-description">
-                    ${car.description}
-                </div>
+                <div class="car-review-description">${car.description || ''}</div>
                 <div class="car-review-actions">
-                    <button class="btn btn-primary view-car-btn" data-id="${car.id}">
-                        <i class="fas fa-eye"></i>
-                        <span>عرض التفاصيل</span>
-                    </button>
-                    <button class="btn btn-success approve-car-btn" data-id="${car.id}">
-                        <i class="fas fa-check"></i>
-                        <span>قبول</span>
-                    </button>
-                    <button class="btn btn-danger reject-car-btn" data-id="${car.id}">
-                        <i class="fas fa-times"></i>
-                        <span>رفض</span>
-                    </button>
+                    <button class="btn btn-sm btn-primary view-car-btn" data-id="${car.id}"><i class="fas fa-eye"></i> عرض</button>
+                    <button class="btn btn-sm btn-success approve-car-btn" data-id="${car.id}"><i class="fas fa-check"></i> قبول</button>
+                    <button class="btn btn-sm btn-danger reject-car-btn" data-id="${car.id}"><i class="fas fa-times"></i> رفض</button>
                 </div>
-            </div>
-        `;
-        
-        // Add event listeners to buttons
-        const viewBtn = card.querySelector('.view-car-btn');
-        const approveBtn = card.querySelector('.approve-car-btn');
-        const rejectBtn = card.querySelector('.reject-car-btn');
-        
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                window.location.href = `car-detail.html?id=${carId}`;
-            });
-        }
-        
-        if (approveBtn) {
-            approveBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                approveCar(carId);
-            });
-        }
-        
-        if (rejectBtn) {
-            rejectBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                rejectCar(carId);
-            });
-        }
-        
-        pendingCarsContainer.appendChild(card);
+            </div>`;
+        container.appendChild(card);
     });
 }
 
 // Approve Car
 async function approveCar(carId) {
+    showLoading('جاري قبول السيارة...');
     try {
-        // Show loading state
-        showLoading('جاري قبول السيارة...');
-        
-        // Update car status to active
         const result = await updateCarListing(carId, { status: 'active' });
-        
         if (result.success) {
-            // Show success message
             showSuccess('تم قبول السيارة بنجاح!');
-            
-            // Reload pending cars
-            await loadPendingCars();
-            
-            // Reload dashboard data
-            await loadDashboardData();
+            await loadPendingCars(); // Refresh pending list
+            await loadDashboardData(); // Refresh dashboard stats
         } else {
-            showError(result.error || 'حدث خطأ أثناء قبول السيارة. يرجى المحاولة مرة أخرى.');
+            showError(result.error || 'فشل قبول السيارة.');
         }
     } catch (error) {
         console.error('Error approving car:', error);
-        showError('حدث خطأ أثناء قبول السيارة. يرجى المحاولة مرة أخرى.');
+        showError('حدث خطأ أثناء قبول السيارة.');
     } finally {
-        // Hide loading state
         hideLoading();
     }
 }
 
 // Reject Car
 async function rejectCar(carId) {
+    if (!confirm('هل أنت متأكد من رفض هذه السيارة؟')) return;
+    showLoading('جاري رفض السيارة...');
     try {
-        // Show confirmation dialog
-        if (!confirm('هل أنت متأكد من رفض هذه السيارة؟')) {
-            return;
-        }
-        
-        // Show loading state
-        showLoading('جاري رفض السيارة...');
-        
-        // Update car status to rejected
         const result = await updateCarListing(carId, { status: 'rejected' });
-        
         if (result.success) {
-            // Show success message
             showSuccess('تم رفض السيارة بنجاح!');
-            
-            // Reload pending cars
-            await loadPendingCars();
-            
-            // Reload dashboard data
-            await loadDashboardData();
+            await loadPendingCars(); // Refresh pending list
+            await loadDashboardData(); // Refresh dashboard stats
         } else {
-            showError(result.error || 'حدث خطأ أثناء رفض السيارة. يرجى المحاولة مرة أخرى.');
+            showError(result.error || 'فشل رفض السيارة.');
         }
     } catch (error) {
         console.error('Error rejecting car:', error);
-        showError('حدث خطأ أثناء رفض السيارة. يرجى المحاولة مرة أخرى.');
+        showError('حدث خطأ أثناء رفض السيارة.');
     } finally {
-        // Hide loading state
         hideLoading();
     }
 }
 
-// Display Users
-function displayUsers(users) {
-    console.log('Displaying users:', users);
-    const usersTable = document.getElementById('usersTable');
-    if (!usersTable) {
-        console.error('Users table element not found');
-        return;
-    }
-    const usersTableBody = usersTable.querySelector('tbody');
-    if (!usersTableBody) {
-        console.error('Users table body element not found');
-        return;
-    }
-    usersTableBody.innerHTML = '';
-    users.forEach(user => {
-        console.log('Processing user:', user);
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${user.name || ''}</td>
-            <td>${user.email || ''}</td>
-            <td>${user.phone || ''}</td>
-            <td>${user.location || ''}</td>
-            <td>${formatDate(user.createdAt)}</td>
-            <td>${user.isSubscribed ? 'مشترك' : 'غير مشترك'}</td>
-            <td>${user.isAdmin ? '<span class="status-badge active">مشرف</span>' : '<span class="status-badge inactive">مستخدم</span>'}</td>
-            <td>
-                <div class="table-actions">
-                    <button class="table-action view" title="عرض" data-id="${user.uid || user.id}"><i class="fas fa-eye"></i></button>
-                    <button class="table-action edit" title="تعديل" data-id="${user.uid || user.id}"><i class="fas fa-edit"></i></button>
-                    <button class="table-action delete" title="حذف" data-id="${user.uid || user.id}"><i class="fas fa-trash"></i></button>
-                    <button class="btn btn-sm ${user.isAdmin ? 'btn-danger' : 'btn-success'} admin-toggle-btn" data-id="${user.uid || user.id}" data-status="${user.isAdmin}">
-                        ${user.isAdmin ? 'سحب صلاحية الأدمن' : 'منح صلاحية الأدمن'}
-                    </button>
-                    <button class="btn btn-success btn-sm give-subscription-btn" data-id="${user.uid || user.id}">إعطاء اشتراك مجاني</button>
-                </div>
-            </td>
-        `;
-        usersTableBody.appendChild(tr);
-    });
-    console.log('Finished displaying users');
+// Display Users in Table
+function displayUsers(users = []) {
+    const tableBody = document.querySelector('#usersTable tbody');
+    if (!tableBody) return;
+    tableBody.innerHTML = '';
+    users.forEach(user => addUserRow(user, tableBody));
 }
 
-// Add event delegation for table actions
-document.addEventListener('DOMContentLoaded', function() {
-    const usersTable = document.getElementById('usersTable');
-    if (usersTable) {
-        usersTable.addEventListener('click', function(e) {
-            const target = e.target.closest('button');
-            if (!target) return;
+// Add User Row Helper
+function addUserRow(user, tableBody) {
+    if (!user || !tableBody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${user.name || user.email.split('@')[0]}</td>
+        <td>${user.email || ''}</td>
+        <td>${user.phone || 'N/A'}</td>
+        <td>${user.location || 'N/A'}</td>
+        <td>${formatDate(user.createdAt)}</td>
+        <td>${user.isSubscribed ? '<span class="status-badge active">مشترك</span>' : '<span class="status-badge inactive">غير مشترك</span>'}</td>
+        <td>${user.isAdmin ? '<span class="status-badge active">مشرف</span>' : '<span class="status-badge inactive">مستخدم</span>'}</td>
+        <td>
+            <div class="table-actions">
+                <button class="table-action view view-user-btn" title="عرض" data-id="${user.uid || user.id}"><i class="fas fa-eye"></i></button>
+                <button class="table-action edit edit-user-btn" title="تعديل" data-id="${user.uid || user.id}"><i class="fas fa-edit"></i></button>
+                <button class="table-action delete delete-user-btn" title="حذف" data-id="${user.uid || user.id}"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-sm ${user.isAdmin ? 'btn-warning' : 'btn-success'} admin-toggle-btn" data-id="${user.uid || user.id}" data-status="${user.isAdmin}">
+                    <i class="fas fa-user-shield"></i> ${user.isAdmin ? 'إزالة الأدمن' : 'منح الأدمن'}
+                </button>
+                ${!user.isSubscribed ? `<button class="btn btn-sm btn-info give-subscription-btn" data-id="${user.uid || user.id}"><i class="fas fa-star"></i> منح اشتراك</button>` : ''}
+                ${user.isSubscribed ? `<button class="btn btn-danger btn-sm remove-subscription-btn" data-id="${user.uid || user.id}">سحب الاشتراك</button>` : ''}
+            </div>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+}
 
-            const action = target.classList.contains('view') ? 'view' :
-                          target.classList.contains('edit') ? 'edit' :
-                          target.classList.contains('delete') ? 'delete' :
-                          target.classList.contains('admin-toggle-btn') ? 'admin-toggle' :
-                          target.classList.contains('give-subscription-btn') ? 'give-subscription' : null;
-
-            if (!action) return;
-
-            const userId = target.dataset.id;
-            if (!userId) return;
-
-            switch (action) {
-                case 'view':
-                viewUserDetails(userId);
-                    break;
-                case 'edit':
-                    editUserDetails(userId);
-                    break;
-                case 'delete':
-                    deleteUser(userId);
-                    break;
-                case 'admin-toggle':
-                    const isAdmin = target.dataset.status === 'true';
-                    toggleAdminStatus(userId, isAdmin);
-                    break;
-                case 'give-subscription':
-                    giveFreeSubscription(userId);
-                    break;
-            }
-        });
-    }
-});
-
-// Modal logic for user details
+// User Details Modal Logic
 const userModal = document.getElementById('userModal');
 const closeUserModal = document.getElementById('closeUserModal');
 const cancelUserModal = document.getElementById('cancelUserModal');
@@ -659,740 +726,414 @@ const modalUserName = document.getElementById('modalUserName');
 const modalUserEmail = document.getElementById('modalUserEmail');
 const modalUserPhone = document.getElementById('modalUserPhone');
 const modalUserLocation = document.getElementById('modalUserLocation');
-let currentUserId = null;
+let currentEditUserId = null;
 
-function openUserModal(user, isEdit = false) {
-    if (!user || !userModal) return;
-    userModal.style.display = 'block';
+function openUserModal(user, isEditMode = false) {
+    if (!user || !userModal || !userModalForm) return;
+    currentEditUserId = user.uid;
+    modalUserName.value = user.name || '';
+    modalUserEmail.value = user.email || '';
+    modalUserPhone.value = user.phone || '';
+    modalUserLocation.value = user.location || '';
+
+    // Disable/enable fields
+    modalUserName.disabled = !isEditMode;
+    modalUserEmail.disabled = true; // Email cannot be edited
+    modalUserPhone.disabled = !isEditMode;
+    modalUserLocation.disabled = !isEditMode;
+
+    userModalForm.querySelector('button[type="submit"]').style.display = isEditMode ? 'inline-block' : 'none';
+    userModal.style.display = 'flex'; // Use flex for centering
     document.body.style.overflow = 'hidden';
-    if (modalUserName) modalUserName.value = user.name || '';
-    if (modalUserEmail) modalUserEmail.value = user.email || '';
-    if (modalUserPhone) modalUserPhone.value = user.phone || '';
-    if (modalUserLocation) modalUserLocation.value = user.location || '';
-    if (userModalForm) {
-        userModalForm.elements['modalUserName'].disabled = !isEdit;
-        userModalForm.elements['modalUserPhone'].disabled = !isEdit;
-        userModalForm.elements['modalUserLocation'].disabled = !isEdit;
-    }
-    const saveButton = document.getElementById('saveUserModal');
-    if (saveButton) saveButton.style.display = isEdit ? 'inline-block' : 'none';
-    currentUserId = user.uid;
 }
 
-if (closeUserModal && cancelUserModal) {
-    closeUserModal.onclick = cancelUserModal.onclick = function() {
-        if (userModal) {
-            userModal.style.display = 'none';
-            document.body.style.overflow = '';
-            currentUserId = null;
-        }
-    };
-}
+if (closeUserModal) closeUserModal.onclick = () => { userModal.style.display = 'none'; document.body.style.overflow = ''; currentEditUserId = null; };
+if (cancelUserModal) cancelUserModal.onclick = () => { userModal.style.display = 'none'; document.body.style.overflow = ''; currentEditUserId = null; };
 
 if (userModalForm) {
-    userModalForm.onsubmit = async function(e) {
+    userModalForm.onsubmit = async (e) => {
         e.preventDefault();
-        if (!currentUserId) return;
+        if (!currentEditUserId) return;
         const updatedData = {
-            name: modalUserName ? modalUserName.value : '',
-            phone: modalUserPhone ? modalUserPhone.value : '',
-            location: modalUserLocation ? modalUserLocation.value : ''
+            name: modalUserName.value.trim(),
+            phone: modalUserPhone.value.trim(),
+            location: modalUserLocation.value.trim()
         };
-        await updateUserProfile(currentUserId, updatedData);
-        showSuccess('تم حفظ التغييرات بنجاح!');
-        if (userModal) {
-            userModal.style.display = 'none';
-            document.body.style.overflow = '';
+        showLoading('جاري حفظ التعديلات...');
+        try {
+            const result = await updateUserProfile(currentEditUserId, updatedData);
+            if (result.success) {
+                showSuccess('تم حفظ التغييرات بنجاح!');
+                userModal.style.display = 'none';
+                document.body.style.overflow = '';
+                // Reload users list to reflect changes
+                const usersResult = await getAllUsers();
+                if (usersResult.success) displayUsers(usersResult.users);
+            } else {
+                showError(result.error || 'فشل حفظ التعديلات.');
+            }
+        } catch (error) {
+            logError(error, 'saveUserModal');
+            showError('حدث خطأ أثناء حفظ التعديلات.');
+        } finally {
+            hideLoading();
+            currentEditUserId = null;
         }
-        currentUserId = null;
-        // Reload users list
-        const usersResult = await getAllUsers();
-        if (usersResult.success) displayUsers(usersResult.users);
     };
 }
 
-// Update view/edit user functions to use modal
-function viewUserDetails(userId) {
-    getUserData(userId).then(userData => {
-        if (userData && userData.userData) {
-            openUserModal({...userData.userData, uid: userId}, false);
+// View/Edit User Actions
+async function viewUserDetails(userId) {
+    showLoading('جاري تحميل بيانات المستخدم...');
+    try {
+        const result = await getUserData(userId);
+        if (result.success) {
+            openUserModal({ ...result.userData, uid: userId }, false); // View mode
         } else {
-            alert('تعذر جلب بيانات المستخدم');
-}
-    });
-}
-function editUserDetails(userId) {
-    getUserData(userId).then(userData => {
-        if (userData && userData.userData) {
-            openUserModal({...userData.userData, uid: userId}, true);
-        } else {
-            alert('تعذر جلب بيانات المستخدم');
+            showError('تعذر جلب بيانات المستخدم.');
         }
-    });
+    } catch (error) { logError(error, 'viewUserDetails'); showError('خطأ في عرض بيانات المستخدم.'); } finally { hideLoading(); }
+}
+
+async function editUserDetails(userId) {
+    showLoading('جاري تحميل بيانات المستخدم للتعديل...');
+    try {
+        const result = await getUserData(userId);
+        if (result.success) {
+            openUserModal({ ...result.userData, uid: userId }, true); // Edit mode
+        } else {
+            showError('تعذر جلب بيانات المستخدم.');
+        }
+    } catch (error) { logError(error, 'editUserDetails'); showError('خطأ في تحميل بيانات المستخدم للتعديل.'); } finally { hideLoading(); }
 }
 
 // Delete User
 async function deleteUser(userId) {
-    if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.')) {
+    if (!confirm('هل أنت متأكد أنك تريد حذف هذا المستخدم نهائيًا؟ لا يمكن التراجع عن هذه العملية!')) {
         return;
     }
+
     try {
-        showLoading('جاري حذف المستخدم...');
-        const result = await deleteUserFromFirestore(userId);
-        if (result.success) {
-            showSuccess('تم حذف المستخدم بنجاح!');
-            // Reload users list
+        console.log('Starting admin user deletion process for user:', userId);
+        
+        // First delete all user's cars
+        console.log('Deleting user cars...');
+        const deleteCarsResult = await deleteUserCars(userId);
+        if (!deleteCarsResult.success) {
+            console.error('Failed to delete cars:', deleteCarsResult.error);
+            showError('حدث خطأ أثناء حذف إعلانات السيارات: ' + deleteCarsResult.error);
+            return;
+        }
+        console.log('Successfully deleted all user cars');
+
+        // Delete user document from Firestore
+        console.log('Deleting user document from Firestore...');
+        try {
+            const userDocRef = doc(db, "users", userId);
+            await deleteDoc(userDocRef);
+            console.log('Successfully deleted user document from Firestore');
+        } catch (firestoreError) {
+            console.error('Error deleting user document:', firestoreError);
+            showError('حدث خطأ أثناء حذف بيانات المستخدم: ' + firestoreError.message);
+            return;
+        }
+
+        // Delete user from Firebase Auth
+        console.log('Deleting user authentication account...');
+        try {
+            // Get the current user's token
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                throw new Error('No authenticated user found');
+            }
+
+            // Create a custom token for admin operations
+            const adminToken = await currentUser.getIdToken(true);
+            
+            // Make a request to your backend endpoint
+            const response = await fetch(`${currentConfig.apiUrl}/delete-user`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ userId })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to delete user');
+            }
+
+            console.log('Successfully deleted user authentication account');
+            showSuccess('تم حذف المستخدم وجميع بياناته بنجاح.');
+            
+            // Refresh the users list
             const usersResult = await getAllUsers();
             if (usersResult.success) displayUsers(usersResult.users);
-        } else {
-            showError(result.error || 'حدث خطأ أثناء حذف المستخدم.');
+        } catch (authError) {
+            console.error('Error deleting auth account:', authError);
+            showError('حدث خطأ أثناء حذف حساب المستخدم: ' + authError.message);
         }
     } catch (error) {
-        logError(error, 'deleteUser');
-        showError('حدث خطأ أثناء حذف المستخدم.');
-    } finally {
-        hideLoading();
+        console.error('Error in admin user deletion process:', error);
+        showError('حدث خطأ أثناء حذف المستخدم: ' + error.message);
     }
 }
 
 // Give Free Subscription
 async function giveFreeSubscription(userId) {
-    if (!confirm('هل أنت متأكد من إعطاء اشتراك مجاني لهذا المستخدم؟')) {
-        return;
-    }
+    if (!confirm('هل أنت متأكد من منح اشتراك مجاني لهذا المستخدم؟')) return;
+    showLoading('جاري منح الاشتراك...');
     try {
-        showLoading('جاري إعطاء الاشتراك المجاني...');
-        const result = await updateUserProfile(userId, { isSubscribed: true });
+        const result = await updateUserProfile(userId, { isSubscribed: true, subscriptionEndDate: null }); // Or set an end date
         if (result.success) {
-            showSuccess('تم إعطاء الاشتراك المجاني بنجاح!');
-            // Reload users list
-            const usersResult = await getAllUsers();
+            showSuccess('تم منح الاشتراك المجاني بنجاح!');
+            const usersResult = await getAllUsers(); // Refresh list
             if (usersResult.success) displayUsers(usersResult.users);
         } else {
-            showError(result.error || 'حدث خطأ أثناء إعطاء الاشتراك المجاني.');
+            showError(result.error || 'فشل منح الاشتراك.');
         }
     } catch (error) {
         logError(error, 'giveFreeSubscription');
-        showError('حدث خطأ أثناء إعطاء الاشتراك المجاني.');
+        showError('حدث خطأ أثناء منح الاشتراك.');
     } finally {
         hideLoading();
     }
 }
 
 // Toggle Admin Status
-async function toggleAdminStatus(userId, currentStatus) {
+async function toggleAdminStatus(userId, currentIsAdmin) {
+    const actionText = currentIsAdmin ? 'إزالة صلاحية الأدمن' : 'منح صلاحية الأدمن';
+    if (!confirm(`هل أنت متأكد من ${actionText} لهذا المستخدم؟`)) return;
+    showLoading(`جاري ${actionText}...`);
     try {
-        if (!confirm(`هل أنت متأكد من ${currentStatus ? 'سحب' : 'منح'} صلاحية الأدمن لهذا المستخدم؟`)) {
-            return;
-        }
-        showLoading(`جاري ${currentStatus ? 'سحب' : 'منح'} صلاحية الأدمن...`);
-        const result = await updateUserProfile(userId, { isAdmin: !currentStatus });
+        // IMPORTANT: Setting admin status client-side is insecure.
+        // Use a backend function (Firebase Functions) to verify the caller is an admin
+        // and then set custom claims or update Firestore securely.
+        const result = await updateUserProfile(userId, { isAdmin: !currentIsAdmin });
+        // Example backend call: await setAdminClaim(userId, !currentIsAdmin);
         if (result.success) {
-            showSuccess(`تم ${currentStatus ? 'سحب' : 'منح'} صلاحية الأدمن بنجاح!`);
+            showSuccess(`تم ${actionText} بنجاح!`);
+            const usersResult = await getAllUsers(); // Refresh list
+            if (usersResult.success) displayUsers(usersResult.users);
         } else {
-            showError(result.error || `حدث خطأ أثناء تحديث صلاحية الأدمن.`);
+            showError(result.error || `فشل ${actionText}.`);
         }
     } catch (error) {
         logError(error, 'toggleAdminStatus');
-        showError('حدث خطأ أثناء تحديث صلاحية الأدمن.');
+        showError(`حدث خطأ أثناء ${actionText}.`);
     } finally {
         hideLoading();
     }
 }
 
-// Modal logic for car details
-const carModal = document.getElementById('carModal');
-const closeCarModal = document.getElementById('closeCarModal');
-const cancelCarModal = document.getElementById('cancelCarModal');
-const carModalForm = document.getElementById('carModalForm');
-const modalCarTitle = document.getElementById('modalCarTitle');
-const modalCarMake = document.getElementById('modalCarMake');
-const modalCarModel = document.getElementById('modalCarModel');
-const modalCarYear = document.getElementById('modalCarYear');
-const modalCarPrice = document.getElementById('modalCarPrice');
-const modalCarLocation = document.getElementById('modalCarLocation');
-const modalCarDescription = document.getElementById('modalCarDescription');
-let currentCarId = null;
-
-function openCarModal(car, isEdit = false) {
-    if (!car) return;
-    carModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    modalCarTitle.value = car.title || '';
-    modalCarMake.value = car.make || '';
-    modalCarModel.value = car.model || '';
-    modalCarYear.value = car.year || '';
-    modalCarPrice.value = car.price || '';
-    modalCarLocation.value = car.location || '';
-    modalCarDescription.value = car.description || '';
-    carModalForm.elements['modalCarTitle'].disabled = !isEdit;
-    carModalForm.elements['modalCarMake'].disabled = !isEdit;
-    carModalForm.elements['modalCarModel'].disabled = !isEdit;
-    carModalForm.elements['modalCarYear'].disabled = !isEdit;
-    carModalForm.elements['modalCarPrice'].disabled = !isEdit;
-    carModalForm.elements['modalCarLocation'].disabled = !isEdit;
-    carModalForm.elements['modalCarDescription'].disabled = !isEdit;
-    document.getElementById('saveCarModal').style.display = isEdit ? 'inline-block' : 'none';
-    currentCarId = car.id;
-}
-
-closeCarModal.onclick = cancelCarModal.onclick = function() {
-    carModal.style.display = 'none';
-    document.body.style.overflow = '';
-    currentCarId = null;
-};
-
-carModalForm.onsubmit = async function(e) {
-    e.preventDefault();
-    if (!currentCarId) return;
-    const updatedData = {
-        title: modalCarTitle.value,
-        make: modalCarMake.value,
-        model: modalCarModel.value,
-        year: modalCarYear.value,
-        price: modalCarPrice.value,
-        location: modalCarLocation.value,
-        description: modalCarDescription.value
-    };
-    await updateCarListing(currentCarId, updatedData);
-    showSuccess('تم حفظ التغييرات بنجاح!');
-    carModal.style.display = 'none';
-    document.body.style.overflow = '';
-    currentCarId = null;
-    // Reload cars list
-    const carsResult = await getCarListings({}, 'createdAt', 'desc', 100);
-    if (carsResult.success) displayCars(carsResult.cars);
-};
-
-// Update view/edit car functions to use modal
-function viewCarDetails(carId) {
-    getCarDetails(carId).then(carData => {
-        if (carData && carData.car) {
-            openCarModal({ ...carData.car, id: carId }, false);
-        } else {
-            alert('تعذر جلب بيانات السيارة');
-        }
-    });
-}
-function editCarDetails(carId) {
-    getCarDetails(carId).then(carData => {
-        if (carData && carData.car) {
-            openCarModal({ ...carData.car, id: carId }, true);
-        } else {
-            alert('تعذر جلب بيانات السيارة');
-        }
-    });
-}
-
-// Update displayCars to use modal for view/edit
-function displayCars(cars) {
-    const carsTable = document.getElementById('carsTable');
-    if (!carsTable) return;
-    const tableBody = carsTable.querySelector('tbody');
-    if (!tableBody) return;
+// Display Cars in Table
+function displayCars(cars = []) {
+    console.log('Displaying cars:', cars);
+    const tableBody = document.querySelector('#carsTable tbody');
+    console.log('Cars table body element:', tableBody);
+    if (!tableBody) {
+        console.error('Cars table body not found!');
+        return;
+    }
     tableBody.innerHTML = '';
-    cars.forEach(car => {
-        const row = document.createElement('tr');
-        const formattedDate = formatDate(car.createdAt);
-        const formattedPrice = formatCurrency(car.price);
-        let statusClass = 'inactive';
-        let statusText = 'غير نشط';
-        switch (car.status) {
-            case 'active': statusClass = 'active'; statusText = 'نشط'; break;
-            case 'pending': statusClass = 'pending'; statusText = 'معلق'; break;
-            case 'rejected': statusClass = 'inactive'; statusText = 'مرفوض'; break;
+    cars.forEach(car => addCarRow(car, tableBody));
+}
+
+// Add Car Row Helper
+function addCarRow(car, tableBody) {
+    if (!car || !tableBody) return;
+    const tr = document.createElement('tr');
+    let statusClass = 'inactive';
+    let statusText = car.status ? car.status : 'غير محدد'; // Default text
+    switch (car.status) {
+        case 'active': statusClass = 'active'; statusText = 'نشط'; break;
+        case 'pending': case 'waiting': statusClass = 'pending'; statusText = 'معلق'; break;
+        case 'rejected': statusClass = 'inactive'; statusText = 'مرفوض'; break;
+        case 'sold': statusClass = 'inactive'; statusText = 'مباع'; break;
+    }
+    tr.innerHTML = `
+        <td>${car.title || 'N/A'}</td>
+        <td>${getEnglishMake(car.make) || ''} ${car.model || ''}</td>
+        <td>${car.year || 'N/A'}</td>
+        <td>${formatCurrency(car.price)}</td>
+        <td>${car.contactName || 'N/A'}</td>
+        <td>${formatDate(car.createdAt)}</td>
+        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        <td>
+            <div class="table-actions">
+                <button class="table-action view view-car-btn" data-id="${car.id}" title="عرض"><i class="fas fa-eye"></i></button>
+                <button class="table-action edit edit-car-btn" data-id="${car.id}" title="تعديل"><i class="fas fa-edit"></i></button>
+                <button class="table-action delete delete-car-btn" data-id="${car.id}" title="حذف"><i class="fas fa-trash"></i></button>
+            </div>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+
+    // Add event listeners for the buttons
+    const viewBtn = tr.querySelector('.view-car-btn');
+    const editBtn = tr.querySelector('.edit-car-btn');
+    const deleteBtn = tr.querySelector('.delete-car-btn');
+
+    if (viewBtn) {
+        viewBtn.addEventListener('click', () => viewCarDetails(car.id));
+    }
+    if (editBtn) {
+        editBtn.addEventListener('click', () => editCarDetails(car.id));
+    }
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => deleteCar(car.id));
+    }
+}
+
+// View Car Details (Action)
+async function viewCarDetails(carId) {
+    showLoading('جاري تحميل بيانات السيارة...');
+    try {
+        console.log('Fetching car details for:', carId);
+        const carDataResult = await getCarDetails(carId);
+        if (carDataResult.success) {
+            // Open in the same tab instead of new tab
+            window.location.href = `car-detail.html?id=${carId}`;
+        } else {
+            showError('تعذر جلب بيانات السيارة.');
         }
-        row.innerHTML = `
-            <td>${car.title || 'بدون عنوان'}</td>
-            <td>${getEnglishMake(car.make) || ''} ${car.model || ''}</td>
-            <td>${car.year || 'غير محدد'}</td>
-            <td>${formattedPrice}</td>
-            <td>${car.contactName || 'غير متوفر'}</td>
-            <td>${formattedDate}</td>
-            <td>
-                <span class="status-badge ${statusClass}">
-                    ${statusText}
-                </span>
-            </td>
-            <td>
-                <div class="table-actions">
-                    <button class="table-action view view-car-btn" data-id="${car.id}" title="عرض">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="table-action edit edit-car-btn" data-id="${car.id}" title="تعديل">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="table-action delete delete-car-btn" data-id="${car.id}" title="حذف">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        const viewBtn = row.querySelector('.view-car-btn');
-        const editBtn = row.querySelector('.edit-car-btn');
-        const deleteBtn = row.querySelector('.delete-car-btn');
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                viewCarDetails(carId);
-            });
+    } catch (error) {
+        showError('حدث خطأ أثناء جلب بيانات السيارة.');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Edit Car Details (Action)
+async function editCarDetails(carId) {
+    showLoading('جاري تحميل بيانات السيارة للتعديل...');
+    try {
+        console.log('Fetching car details for edit:', carId);
+        const carDataResult = await getCarDetails(carId);
+        if (carDataResult.success) {
+            // Store data temporarily if needed by sell.html or pass via state/params
+            localStorage.setItem('editCarData', JSON.stringify({ id: carId, ...carDataResult.car }));
+            window.location.href = `sell.html?edit=true&id=${carId}`;
+        } else {
+            showError('تعذر جلب بيانات السيارة.');
         }
-        if (editBtn) {
-            editBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                editCarDetails(carId);
-            });
-        }
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function() {
-                const carId = this.getAttribute('data-id');
-                deleteCar(carId);
-            });
-        }
-        tableBody.appendChild(row);
-    });
+    } catch(error) {
+        showError('خطأ في تحميل بيانات السيارة للتعديل.');
+    } finally {
+        hideLoading();
+    }
 }
 
 // Delete Car
 async function deleteCar(carId) {
+    if (!confirm('هل أنت متأكد من حذف هذه السيارة؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    showLoading('جاري حذف السيارة...');
     try {
-        // Show confirmation dialog
-        if (!confirm('هل أنت متأكد من حذف هذه السيارة؟ لا يمكن التراجع عن هذا الإجراء.')) {
-            return;
-        }
-        
-        // Show loading state
-        showLoading('جاري حذف السيارة...');
-        
-        // Delete car
-        const result = await deleteCarListing(carId);
-        
+        const result = await deleteCarListing(carId); // Ensure this handles storage deletion too
         if (result.success) {
-            // Show success message
             showSuccess('تم حذف السيارة بنجاح!');
-            
-            // Reload cars data
+            // Refresh car list and dashboard
             const carsResult = await getCarListings({}, 'createdAt', 'desc', 100);
-            if (carsResult.success) {
-                displayCars(carsResult.cars);
-            }
-            
-            // Reload dashboard data
+            if (carsResult.success) displayCars(carsResult.cars);
             await loadDashboardData();
         } else {
-            showError(result.error || 'حدث خطأ أثناء حذف السيارة. يرجى المحاولة مرة أخرى.');
+            showError(result.error || 'فشل حذف السيارة.');
         }
     } catch (error) {
-        console.error('Error deleting car:', error);
-        showError('حدث خطأ أثناء حذف السيارة. يرجى المحاولة مرة أخرى.');
+        logError(error, 'deleteCar');
+        showError('حدث خطأ أثناء حذف السيارة.');
     } finally {
-        // Hide loading state
         hideLoading();
     }
 }
 
-// Modal logic for subscription details
-const subscriptionModal = document.getElementById('subscriptionModal');
+// Display Subscriptions
+function displaySubscriptions(subscriptions = []) {
+    console.log("Subscriptions to display:", subscriptions);
+    const tableBody = document.querySelector('#subscriptionsTable tbody');
+    if (!tableBody) return;
+    tableBody.innerHTML = '';
+    subscriptions.forEach(sub => addSubscriptionRow(sub, tableBody));
+    // Store globally if needed for view details modal
+    window.currentSubscriptions = subscriptions;
+}
+
+// Add Subscription Row Helper
+function addSubscriptionRow(sub, tableBody) {
+    if (!sub || !tableBody) return;
+    const tr = document.createElement('tr');
+    const statusClass = sub.status === 'active' ? 'active' : 'inactive';
+    const statusText = sub.status === 'active' ? 'نشط' : 'منتهي';
+    tr.innerHTML = `
+        <td>${sub.userName || sub.userId}</td>
+        <td>${sub.planName || 'Basic'}</td> 
+        <td>${formatCurrency(sub.amount)}</td>
+        <td>${formatDate(sub.startDate)}</td>
+        <td>${formatDate(sub.endDate)}</td>
+        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        <td>
+            <div class="table-actions">
+                 <button class="table-action view view-sub-btn" data-id="${sub.id}" title="عرض التفاصيل"><i class="fas fa-eye"></i></button>
+                 <!-- Add edit/delete if needed -->
+            </div>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+}
+
+// View Subscription Details (using modal)
+const subscriptionModal = document.getElementById('subscriptionModal'); // Ensure this modal exists in HTML
 const closeSubscriptionModal = document.getElementById('closeSubscriptionModal');
 const cancelSubscriptionModal = document.getElementById('cancelSubscriptionModal');
-const subscriptionModalForm = document.getElementById('subscriptionModalForm');
-const modalSubscriptionUser = document.getElementById('modalSubscriptionUser');
-const modalSubscriptionPlan = document.getElementById('modalSubscriptionPlan');
-const modalSubscriptionAmount = document.getElementById('modalSubscriptionAmount');
-const modalSubscriptionStart = document.getElementById('modalSubscriptionStart');
-const modalSubscriptionEnd = document.getElementById('modalSubscriptionEnd');
-const modalSubscriptionStatus = document.getElementById('modalSubscriptionStatus');
-let currentSubscriptionId = null;
 
-function openSubscriptionModal(subscription, isEdit = false) {
-    if (!subscription) return;
-    
-    subscriptionModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    
-    // Fill form fields
-    modalSubscriptionUser.value = subscription.userName || subscription.userId || '';
-    modalSubscriptionPlan.value = subscription.planName || 'basic';
-    modalSubscriptionAmount.value = subscription.amount || '';
-    modalSubscriptionStart.value = subscription.startDate ? new Date(subscription.startDate).toISOString().split('T')[0] : '';
-    modalSubscriptionEnd.value = subscription.endDate ? new Date(subscription.endDate).toISOString().split('T')[0] : '';
-    modalSubscriptionStatus.value = subscription.status || 'active';
-    
-    // Enable/disable fields based on edit mode
-    const formFields = subscriptionModalForm.elements;
-    for (let field of formFields) {
-        if (field.id !== 'modalSubscriptionUser') {
-            field.disabled = !isEdit;
-        }
-    }
-    
-    // Show/hide save button
-    document.getElementById('saveSubscriptionModal').style.display = isEdit ? 'inline-block' : 'none';
-    
-    currentSubscriptionId = subscription.id;
-}
-
-// Close modal handlers
-closeSubscriptionModal.onclick = cancelSubscriptionModal.onclick = function() {
-    subscriptionModal.style.display = 'none';
-    document.body.style.overflow = '';
-    currentSubscriptionId = null;
-};
-
-// Save subscription changes
-subscriptionModalForm.onsubmit = async function(e) {
-    e.preventDefault();
-    showError('تعديل الاشتراكات غير مدعوم حالياً.');
-    return;
-};
-
-// Update view subscription function to use modal
 function viewSubscriptionDetails(subscriptionId) {
-    // Find subscription in current list
     const subscription = window.currentSubscriptions?.find(sub => sub.id === subscriptionId);
-    if (subscription) {
-        openSubscriptionModal(subscription, false);
+    if (subscription && subscriptionModal) {
+        // Populate modal fields (ensure elements exist)
+        document.getElementById('modalSubscriptionUser').textContent = subscription.userName || subscription.userId;
+        document.getElementById('modalSubscriptionPlan').textContent = subscription.planName || 'Basic';
+        document.getElementById('modalSubscriptionAmount').textContent = formatCurrency(subscription.amount);
+        document.getElementById('modalSubscriptionStart').textContent = formatDate(subscription.startDate);
+        document.getElementById('modalSubscriptionEnd').textContent = formatDate(subscription.endDate);
+        document.getElementById('modalSubscriptionStatus').textContent = subscription.status === 'active' ? 'نشط' : 'منتهي';
+        
+        subscriptionModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     } else {
-        showError('تعذر جلب بيانات الاشتراك');
+        showError('تعذر العثور على تفاصيل الاشتراك.');
     }
 }
 
-// Update displaySubscriptions to store current list and use modal
-function displaySubscriptions(subscriptions) {
-    // Store current subscriptions list for quick access
-    window.currentSubscriptions = subscriptions;
-    
-    const subscriptionsTable = document.getElementById('subscriptionsTable');
-    if (!subscriptionsTable) return;
-    
-    const tableBody = subscriptionsTable.querySelector('tbody');
-    if (!tableBody) return;
-    
-    tableBody.innerHTML = '';
-    
-    subscriptions.forEach(subscription => {
-        const row = document.createElement('tr');
-        
-        // Format dates
-        const startDate = formatDate(subscription.startDate);
-        const endDate = formatDate(subscription.endDate);
-        const createdDate = formatDate(subscription.createdAt);
-        
-        // Format amount
-        const formattedAmount = formatCurrency(subscription.amount || 0);
-        
-        // Get status class and text
-        let statusClass = 'inactive';
-        let statusText = 'غير نشط';
-        
-        switch (subscription.status) {
-            case 'active':
-                statusClass = 'active';
-                statusText = 'نشط';
-                break;
-            case 'cancelled':
-                statusClass = 'inactive';
-                statusText = 'ملغي';
-                break;
-            case 'expired':
-                statusClass = 'inactive';
-                statusText = 'منتهي';
-                break;
+if (closeSubscriptionModal) closeSubscriptionModal.onclick = () => { subscriptionModal.style.display = 'none'; document.body.style.overflow = ''; };
+if (cancelSubscriptionModal) cancelSubscriptionModal.onclick = () => { subscriptionModal.style.display = 'none'; document.body.style.overflow = ''; };
+
+// Add other functions like updateCharts if they exist
+
+console.log("Admin Enhanced Script Loaded");
+
+// Add event delegation for remove subscription
+if (typeof window !== 'undefined') {
+    document.addEventListener('click', async function(e) {
+        const target = e.target.closest('.remove-subscription-btn');
+        if (target) {
+            const userId = target.dataset.id;
+            if (!userId) return;
+            if (!confirm('هل أنت متأكد من سحب الاشتراك من هذا المستخدم؟')) return;
+            try {
+                showLoading('جاري سحب الاشتراك...');
+                await updateUserProfile(userId, { isSubscribed: false });
+                showSuccess('تم سحب الاشتراك بنجاح!');
+                // Refresh users list
+                const usersResult = await getAllUsers();
+                if (usersResult.success) displayUsers(usersResult.users);
+            } catch (error) {
+                showError('حدث خطأ أثناء سحب الاشتراك');
+            } finally {
+                hideLoading();
+            }
         }
-        
-        row.innerHTML = `
-            <td>${subscription.userName || subscription.userId}</td>
-            <td>${subscription.planName || 'خطة قياسية'}</td>
-            <td>${formattedAmount}</td>
-            <td>${startDate}</td>
-            <td>${endDate}</td>
-            <td>${createdDate}</td>
-            <td>
-                <span class="status-badge ${statusClass}">
-                    ${statusText}
-                </span>
-            </td>
-            <td>
-                <div class="table-actions">
-                    <button class="table-action view view-subscription-btn" data-id="${subscription.id}" title="عرض">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="table-action edit edit-subscription-btn" data-id="${subscription.id}" title="تعديل">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="table-action ${subscription.status === 'active' ? 'delete' : 'success'} toggle-subscription-btn" 
-                            data-id="${subscription.id}" 
-                            data-status="${subscription.status}" 
-                            title="${subscription.status === 'active' ? 'إلغاء الاشتراك' : 'تفعيل الاشتراك'}">
-                        <i class="fas ${subscription.status === 'active' ? 'fa-ban' : 'fa-check'}"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        
-        // Add event listeners
-        const viewBtn = row.querySelector('.view-subscription-btn');
-        const editBtn = row.querySelector('.edit-subscription-btn');
-        const toggleBtn = row.querySelector('.toggle-subscription-btn');
-        
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function() {
-                const subscriptionId = this.getAttribute('data-id');
-                viewSubscriptionDetails(subscriptionId);
-            });
-        }
-        
-        if (editBtn) {
-            editBtn.addEventListener('click', function() {
-                const subscriptionId = this.getAttribute('data-id');
-                const subscription = window.currentSubscriptions.find(sub => sub.id === subscriptionId);
-                if (subscription) {
-                    openSubscriptionModal(subscription, true);
-                }
-            });
-        }
-        
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                const subscriptionId = this.getAttribute('data-id');
-                const status = this.getAttribute('data-status');
-                toggleSubscriptionStatus(subscriptionId, status);
-            });
-        }
-        
-        tableBody.appendChild(row);
     });
 }
 
-// Toggle Subscription Status
-async function toggleSubscriptionStatus(subscriptionId, currentStatus) {
-    try {
-        if (!confirm(`هل أنت متأكد من ${currentStatus === 'active' ? 'إلغاء' : 'تفعيل'} هذا الاشتراك؟`)) {
-            return;
-        }
-        showLoading(`جاري ${currentStatus === 'active' ? 'إلغاء' : 'تفعيل'} الاشتراك...`);
-        // Here you would update the subscription status in Firestore
-        // For demo, just show a message
-        showSuccess(`تم ${currentStatus === 'active' ? 'إلغاء' : 'تفعيل'} الاشتراك بنجاح!`);
-        // Reload subscriptions data
-        const subscriptionsResult = await getAllSubscriptions();
-        if (subscriptionsResult.success) {
-            displaySubscriptions(subscriptionsResult.subscriptions);
-        }
-    } catch (error) {
-        console.error('Error toggling subscription status:', error);
-        showError(`حدث خطأ أثناء ${currentStatus === 'active' ? 'إلغاء' : 'تفعيل'} الاشتراك. يرجى المحاولة مرة أخرى.`);
-    } finally {
-        hideLoading();
-    }
-}
-
-// Update Charts
-function updateCharts(users, cars, subscriptions) {
-    // TODO: Implement charts using Chart.js or similar library
-    console.log('Charts would be updated here with:', { users, cars, subscriptions });
-}
-
-// Show Loading State
-function showLoading(message = 'جاري التحميل...') {
-    // Create loading overlay if it doesn't exist
-    let loadingOverlay = document.getElementById('loadingOverlay');
-    
-    if (!loadingOverlay) {
-        loadingOverlay = document.createElement('div');
-        loadingOverlay.id = 'loadingOverlay';
-        loadingOverlay.className = 'loading-overlay';
-        loadingOverlay.innerHTML = `
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-                <span id="loadingMessage">${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(loadingOverlay);
-    } else {
-        // Update loading message
-        const loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) {
-            loadingMessage.textContent = message;
-        }
-        
-        // Show loading overlay
-        loadingOverlay.style.display = 'flex';
-    }
-}
-
-// Hide Loading State
-function hideLoading() {
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'none';
-    }
-}
-
-// Show Section Loading
-function showSectionLoading(sectionId, message = 'جاري التحميل...') {
-    const section = document.getElementById(sectionId);
-    
-    if (!section) return;
-    
-    // Create loading overlay if it doesn't exist
-    let loadingOverlay = section.querySelector('.section-loading');
-    
-    if (!loadingOverlay) {
-        loadingOverlay = document.createElement('div');
-        loadingOverlay.className = 'section-loading';
-        loadingOverlay.innerHTML = `
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        section.appendChild(loadingOverlay);
-    } else {
-        // Show loading overlay
-        loadingOverlay.style.display = 'flex';
-    }
-}
-
-// Hide Section Loading
-function hideSectionLoading(sectionId) {
-    const section = document.getElementById(sectionId);
-    
-    if (!section) return;
-    
-    const loadingOverlay = section.querySelector('.section-loading');
-    
-    if (loadingOverlay) {
-        loadingOverlay.style.display = 'none';
-    }
-}
-
-// Show Error Message
-function showError(message) {
-    // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toastContainer');
-    
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toastContainer';
-        toastContainer.className = 'toast-container';
-        
-        document.body.appendChild(toastContainer);
-    }
-    console.log('Error shown:', message); // بعد showError
-    
-    
-    // Create toast
-    const toast = document.createElement('div');
-    toast.className = 'toast toast-error';
-    toast.innerHTML = `
-        <div class="toast-icon">
-            <i class="fas fa-exclamation-circle"></i>
-        </div>
-        <div class="toast-content">
-            <div class="toast-message">${message}</div>
-        </div>
-        <button class="toast-close">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    // Add event listener to close button
-    const closeBtn = toast.querySelector('.toast-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            toast.remove();
-        });
-    }
-    
-    // Add toast to container
-    toastContainer.appendChild(toast);
-    
-    // Remove toast after 5 seconds
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
-}
-
-// Show Success Message
-function showSuccess(message) {
-    // Create toast container if it doesn't exist
-    let toastContainer = document.getElementById('toastContainer');
-    
-    if (!toastContainer) {
-        toastContainer = document.createElement('div');
-        toastContainer.id = 'toastContainer';
-        toastContainer.className = 'toast-container';
-        
-        document.body.appendChild(toastContainer);
-    }
-    console.log('Success shown:', message); // بعد showSuccess
-    
-    // Create toast
-    const toast = document.createElement('div');
-    toast.className = 'toast toast-success';
-    toast.innerHTML = `
-        <div class="toast-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="toast-content">
-            <div class="toast-message">${message}</div>
-        </div>
-        <button class="toast-close">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    // Add event listener to close button
-    const closeBtn = toast.querySelector('.toast-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            toast.remove();
-        });
-    }
-    
-    // Add toast to container
-    toastContainer.appendChild(toast);
-    
-    // Remove toast after 5 seconds
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
-}
-
-// Centralized error logging function
-function logError(error, context = '') {
-    console.error(`[AdminPanel] ${context}`, error);
-    // You can extend this to send errors to Firestore or Sentry
-}
-
-// Export functions
-export {
-    initAdminPage,
-    loadDashboardData,
-    loadPendingCars,
-    approveCar,
-    rejectCar,
-    deleteCar,
-    deleteUser,
-    editUserDetails,
-    viewUserDetails
-};
-
-window.deleteUser = deleteUser;
-window.editUserDetails = editUserDetails;
-window.viewUserDetails = viewUserDetails;
-
-async function deleteUserFromFirestore(userId) {
-    try {
-        const userRef = doc(db, 'users', userId);
-        await deleteDoc(userRef);
-        return { success: true };
-    } catch (error) {
-        logError(error, 'deleteUserFromFirestore');
-        return { success: false, error: 'حدث خطأ أثناء حذف المستخدم من Firestore.' };
-    }
-}

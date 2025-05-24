@@ -84,11 +84,19 @@ function initPaymentMethods() {
         creditCardMethod.classList.remove('active');
         paypalButtonContainer.style.display = 'block';
         subscribeBtn.style.display = 'none';
-        // Clear previous PayPal buttons before rendering a new one
         paypalButtonContainer.innerHTML = '';
-        initPayPalButtons('#paypal-button-container', 20, function(result) {
-            window.location.href = 'profile.html?subscription=success';
-        });
+        // Load PayPal SDK dynamically if not loaded
+        if (!window.paypal) {
+            loadPayPalScript(function() {
+                initPayPalButtons('#paypal-button-container', 20, function(result) {
+                    window.location.href = 'profile.html?subscription=success';
+                });
+            });
+        } else {
+            initPayPalButtons('#paypal-button-container', 20, function(result) {
+                window.location.href = 'profile.html?subscription=success';
+            });
+        }
     });
 
     creditCardMethod.addEventListener('click', function() {
@@ -362,4 +370,20 @@ function updateSubscriptionStatus(planId) {
             </div>
         `;
     }
+}
+
+// Add this function at the end of the file if not already present
+function loadPayPalScript(callback) {
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=AV82eQnfsfYJO5Ktx0a3v672kLdkpniEgGIB9Zj005OAlBaCzU6hADKm1jbVX-tbu97pggIjskFxw66t&currency=USD`;
+    script.async = true;
+    script.onload = function() {
+        console.log('PayPal SDK loaded successfully');
+        if (typeof callback === 'function') callback();
+    };
+    script.onerror = function() {
+        console.error('Failed to load PayPal SDK');
+        showError('فشل في تحميل نظام الدفع. يرجى تحديث الصفحة والمحاولة مرة أخرى.');
+    };
+    document.body.appendChild(script);
 }

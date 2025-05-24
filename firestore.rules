@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // دالة مساعدة للتحقق من صلاحية الأدمن
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.isAdmin == true ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         request.auth.token.email == "admin@carsales.com");
+    }
+
+    // قواعد مجموعة المستخدمين
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // قواعد مجموعة السيارات
+    match /cars/{carId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // قواعد مجموعة الاشتراكات
+    match /subscriptions/{subscriptionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+  }
+} 

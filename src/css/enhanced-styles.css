@@ -189,3 +189,206 @@
     font-weight: 700;
     color: var(--text-color);
 } 
+
+/* Action buttons for both car and user tables */
+.table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+}
+
+.table-action {
+    min-width: 32px;
+    min-height: 32px;
+    margin: 2px;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-action.delete {
+    color: #fff;
+    background: #e74c3c;
+    border: none;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: inline-flex !important;
+}
+
+/* Responsive Styles for Admin Dashboard */
+@media (max-width: 992px) {
+  .admin-container {
+    flex-direction: column;
+  }
+  .admin-sidebar {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+  }
+  .sidebar-header {
+    display: none;
+  }
+  .sidebar-menu {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .sidebar-menu-item {
+    margin-bottom: 0;
+  }
+  .sidebar-menu-link {
+    padding: 10px 8px;
+    font-size: 14px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+    flex: 1 1 70px;
+    text-align: center;
+  }
+  .sidebar-menu-icon {
+    margin-left: 0;
+    margin-bottom: 2px;
+    font-size: 18px;
+    width: auto;
+  }
+  .sidebar-menu-text {
+    font-size: 12px;
+    display: block;
+  }
+  .admin-content {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .admin-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .admin-table-container {
+    padding: 0;
+  }
+  .admin-table {
+    font-size: 12px;
+  }
+  .admin-table th, .admin-table td {
+    padding: 6px 4px;
+  }
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    margin-left: 8px;
+  }
+  .admin-table td:last-child, .admin-table th:last-child {
+    min-width: 90px;
+    max-width: 120px;
+  }
+  .admin-table .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+  .admin-table .action-buttons .btn, .admin-table .action-buttons button {
+    font-size: 12px;
+    padding: 4px 6px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .table-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .table-action {
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 13px;
+  }
+  .table-action.delete {
+    color: #fff;
+    background: #e74c3c;
+    border: none;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: inline-flex !important;
+  }
+  .table-responsive {
+    overflow-x: auto;
+  }
+  .admin-table {
+    min-width: 600px;
+  }
+}
+
+@media (max-width: 576px) {
+  .sidebar-menu-link {
+    font-size: 12px;
+    padding: 6px 2px;
+  }
+  .sidebar-menu-icon {
+    font-size: 14px;
+  }
+  .admin-table-title, .page-title {
+    font-size: 16px;
+  }
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .admin-table .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+  .admin-table .action-buttons .btn, .admin-table .action-buttons button {
+    width: 100%;
+    min-width: 0;
+    font-size: 11px;
+    padding: 3px 0;
+  }
+  .table-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+  .table-action {
+    width: 100%;
+    min-width: 0;
+    font-size: 12px;
+    padding: 3px 0;
+  }
+}
+
+@media (max-width: 1287px) {
+  .table-responsive {
+    overflow-x: auto;
+  }
+  .admin-table {
+    min-width: 800px;
+  }
+}
+
+/* Show only the active admin section */
+.admin-section {
+  display: none;
+}
+.admin-section.active {
+  display: block;
+} 

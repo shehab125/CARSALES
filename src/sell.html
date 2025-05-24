@@ -395,5 +395,59 @@
     <script type="module" src="js/auth.js"></script>
     <!-- Cloudinary Upload Widget -->
     <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY,
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || process.env.FIREBASE_AUTH_DOMAIN,
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || process.env.FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || process.env.FIREBASE_MESSAGING_SENDER_ID,
+            appId: import.meta.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
+            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || process.env.FIREBASE_MEASUREMENT_ID
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Check if we're in edit mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const isEdit = urlParams.get('edit') === 'true';
+        const carId = urlParams.get('id');
+
+        if (isEdit && carId) {
+            // Get car data from localStorage
+            const editCarData = JSON.parse(localStorage.getItem('editCarData'));
+            if (editCarData) {
+                // Fill form with car data
+                document.getElementById('carTitle').value = editCarData.title || '';
+                document.getElementById('carMake').value = editCarData.make || '';
+                document.getElementById('carModel').value = editCarData.model || '';
+                document.getElementById('carYear').value = editCarData.year || '';
+                document.getElementById('carPrice').value = editCarData.price || '';
+                document.getElementById('carLocation').value = editCarData.location || '';
+                document.getElementById('carDescription').value = editCarData.description || '';
+                
+                // Update form title
+                document.querySelector('.sell-car-title').textContent = 'تعديل بيانات السيارة';
+                document.querySelector('.sell-car-subtitle').textContent = 'قم بتعديل معلومات السيارة وتحديث الإعلان';
+                
+                // Update submit button text
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.textContent = 'تحديث الإعلان';
+                }
+            }
+        }
+
+        // Clear localStorage after loading data
+        localStorage.removeItem('editCarData');
+    </script>
 </body>
 </html>

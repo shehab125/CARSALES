@@ -1,8 +1,11 @@
 // Profile page JavaScript file
-import { getCurrentUser, getUserData, getUserSubscription, getCarListings, cancelSubscription, updateUserProfile } from './firebase-api.js';
+import { getCurrentUser, getUserData, getUserSubscription, getCarListings, cancelSubscription, updateUserProfile, deleteCarListing, uploadImageToCloudinary, deleteUserCars } from './firebase-api.js';
 import { formatCurrency, formatDate } from './main.js';
-import { uploadImageToCloudinary } from './firebase-api.js';
 import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updatePassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import { doc, deleteDoc, getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+// Initialize Firestore
+const db = getFirestore();
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Check for reauth param to auto-delete account after re-authentication
@@ -58,23 +61,55 @@ document.addEventListener('DOMContentLoaded', async function() {
             const btn = e.target.closest('#deleteAccountBtn');
             if (btn) {
                 e.preventDefault();
-                if (confirm('هل أنت متأكد أنك تريد حذف حسابك نهائيًا؟ لا يمكن التراجع عن هذه العملية!')) {
+                if (confirm('هل أنت متأكد أنك تريد حذف الحساب نهائيًا؟ لا يمكن التراجع عن هذه العملية!')) {
                     const user = await getCurrentUser();
-                    if (user && user.delete) {
-                        user.delete().then(() => {
-                            showSuccess('تم حذف الحساب بنجاح.');
-                            firebase.auth().signOut().then(() => {
-                                setTimeout(() => { window.location.href = 'auth.html'; }, 1500);
-                            });
-                        }).catch((error) => {
-                            if (error.code === 'auth/requires-recent-login') {
-                                showError('لأسباب أمنية، يجب تسجيل الدخول مجددًا قبل حذف الحساب. سيتم تحويلك إلى صفحة تسجيل الدخول.');
-                                setTimeout(() => { window.location.href = 'auth.html?reauth=1'; }, 2000);
-                            } else {
-                                showError('حدث خطأ أثناء حذف الحساب: ' + error.message);
-                                console.error('Delete account error:', error);
+                    if (user) {
+                        try {
+                            console.log('Starting account deletion process for user:', user.uid);
+                            
+                            // First delete all user's cars
+                            console.log('Deleting user cars...');
+                            const deleteCarsResult = await deleteUserCars(user.uid);
+                            if (!deleteCarsResult.success) {
+                                console.error('Failed to delete cars:', deleteCarsResult.error);
+                                showError('حدث خطأ أثناء حذف إعلانات السيارات: ' + deleteCarsResult.error);
+                                return;
                             }
-                        });
+                            console.log('Successfully deleted all user cars');
+
+                            // Delete user document from Firestore
+                            console.log('Deleting user document from Firestore...');
+                            try {
+                                const userDocRef = doc(db, "users", user.uid);
+                                await deleteDoc(userDocRef);
+                                console.log('Successfully deleted user document from Firestore');
+                            } catch (firestoreError) {
+                                console.error('Error deleting user document:', firestoreError);
+                                showError('حدث خطأ أثناء حذف بيانات المستخدم: ' + firestoreError.message);
+                                return;
+                            }
+
+                            // Then delete the user account from Firebase Auth
+                            console.log('Deleting user authentication account...');
+                            try {
+                                await user.delete();
+                                console.log('Successfully deleted user authentication account');
+                                
+                                showSuccess('تم حذف الحساب وجميع إعلانات السيارات بنجاح.');
+                                setTimeout(() => { window.location.href = 'auth.html'; }, 1500);
+                            } catch (authError) {
+                                console.error('Error deleting auth account:', authError);
+                                if (authError.code === 'auth/requires-recent-login') {
+                                    showError('لأسباب أمنية، يجب تسجيل الدخول مجددًا قبل حذف الحساب. سيتم تحويلك إلى صفحة تسجيل الدخول.');
+                                    setTimeout(() => { window.location.href = 'auth.html?reauth=1'; }, 2000);
+                                } else {
+                                    showError('حدث خطأ أثناء حذف الحساب: ' + authError.message);
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Error in account deletion process:', error);
+                            showError('حدث خطأ أثناء حذف الحساب: ' + error.message);
+                        }
                     } else {
                         showError('تعذر العثور على المستخدم الحالي. يرجى إعادة تسجيل الدخول.');
                     }
@@ -189,6 +224,7 @@ function displayUserProfile(userData) {
     // Update profile avatar
     const profileAvatar = document.getElementById('profileAvatar');
     const avatarPreview = document.getElementById('avatarPreview');
+    const userAvatar = document.getElementById('userAvatar');
     const avatarUrl = userData.photoURL || 'images/user-avatar.jpg';
     if (profileAvatar) {
         profileAvatar.src = avatarUrl;
@@ -196,8 +232,11 @@ function displayUserProfile(userData) {
     if (avatarPreview) {
         avatarPreview.src = avatarUrl;
     }
+    if (userAvatar) {
+        userAvatar.src = avatarUrl;
+    }
     // Update all user-avatar images (header, dropdown, etc)
-    document.querySelectorAll('.user-avatar').forEach(img => {
+    document.querySelectorAll('.user-avatar, #userAvatar, #profileAvatar, #avatarPreview').forEach(img => {
         img.src = avatarUrl;
     });
 }
@@ -503,8 +542,9 @@ async function loadUserSubscription(userId) {
     try {
         // Get user subscription
         const result = await getUserSubscription(userId);
+        console.log('Subscription result:', result); // Debug log
         
-        if (result.success) {
+        if (result.success && result.subscription) {
             // Display user subscription
             displayUserSubscription(result.subscription);
         } else {
@@ -522,7 +562,10 @@ async function loadUserSubscription(userId) {
 function displayUserSubscription(subscription) {
     const subscriptionContainer = document.getElementById('subscriptionDetails');
     
-    if (!subscriptionContainer) return;
+    if (!subscriptionContainer) {
+        console.error('Subscription container not found');
+        return;
+    }
     
     // Format dates
     const startDate = formatDate(subscription.startDate);
@@ -532,7 +575,7 @@ function displayUserSubscription(subscription) {
     const subscriptionHTML = `
         <div class="subscription-card">
             <div class="subscription-header">
-                <h3>${subscription.planName}</h3>
+                <h3>${subscription.planName || 'الباقة الأساسية'}</h3>
                 <span class="subscription-status active">نشط</span>
             </div>
             <div class="subscription-details">
@@ -546,11 +589,11 @@ function displayUserSubscription(subscription) {
                 </div>
                 <div class="subscription-info">
                     <span class="info-label">المبلغ:</span>
-                    <span class="info-value">${formatCurrency(subscription.amount)}</span>
+                    <span class="info-value">${formatCurrency(subscription.amount || 0)}</span>
                 </div>
                 <div class="subscription-info">
                     <span class="info-label">طريقة الدفع:</span>
-                    <span class="info-value">${subscription.paymentMethod}</span>
+                    <span class="info-value">${subscription.paymentMethod || 'غير متوفر'}</span>
                 </div>
                 <div class="subscription-info">
                     <span class="info-label">التجديد التلقائي:</span>
@@ -911,15 +954,9 @@ export async function uploadAvatar(file) {
         if (!user) throw new Error('User not authenticated');
         await updateUserProfile(user.uid, { photoURL: url });
         // Update all user-avatar images
-        document.querySelectorAll('.user-avatar').forEach(img => {
+        document.querySelectorAll('.user-avatar, #userAvatar, #profileAvatar, #avatarPreview').forEach(img => {
             img.src = url;
         });
-        // Update main profile avatar
-        const profileAvatar = document.getElementById('profileAvatar');
-        if (profileAvatar) profileAvatar.src = url;
-        // Update settings avatar preview
-        const avatarPreviewEl = document.getElementById('avatarPreview');
-        if (avatarPreviewEl) avatarPreviewEl.src = url;
         return { success: true, avatarUrl: url };
     } catch (error) {
         return { success: false, error: error.message };

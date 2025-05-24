@@ -626,31 +626,6 @@
                         <span class="sidebar-menu-text">المستخدمين</span>
                     </a>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a href="#" class="sidebar-menu-link" data-section="subscriptions">
-                        <i class="fas fa-credit-card sidebar-menu-icon"></i>
-                        <span class="sidebar-menu-text">الاشتراكات</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="#" class="sidebar-menu-link" data-section="reports">
-                        <i class="fas fa-chart-bar sidebar-menu-icon"></i>
-                        <span class="sidebar-menu-text">التقارير</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="#" class="sidebar-menu-link" data-section="settings">
-                        <i class="fas fa-cog sidebar-menu-icon"></i>
-                        <span class="sidebar-menu-text">الإعدادات</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item">
-                    <a href="index.html" class="sidebar-menu-link">
-                        <i class="fas fa-sign-out-alt sidebar-menu-icon"></i>
-                        <span class="sidebar-menu-text">العودة للموقع</span>
-                    </a>
-                </li>
-            </ul>
         </div>
 
         <!-- Main Content -->
@@ -912,137 +887,17 @@
 
             <!-- Subscriptions Section -->
             <div id="subscriptions-section" class="admin-section">
-                <div class="admin-header">
-                    <h1 class="page-title">إدارة الاشتراكات</h1>
-                    <div class="admin-actions">
-                        <div class="admin-search">
-                            <input type="text" class="form-input" id="subscriptionsSearchInput" placeholder="بحث...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <button class="btn btn-primary" id="addSubscriptionBtn">
-                            <i class="fas fa-plus"></i>
-                            <span>إضافة اشتراك</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Subscriptions Table -->
-                <div class="admin-table-container" id="subscriptionsTableContainer">
-                    <div class="admin-table-header">
-                        <h2 class="admin-table-title">جميع الاشتراكات</h2>
-                        <div class="filter-buttons">
-                            <button class="btn btn-sm btn-outline active" data-filter="all">الكل</button>
-                            <button class="btn btn-sm btn-outline" data-filter="active">النشطة</button>
-                            <button class="btn btn-sm btn-outline" data-filter="expired">المنتهية</button>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="admin-table" id="subscriptionsTable">
-                            <thead>
-                                <tr>
-                                    <th>المستخدم</th>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>نوع الاشتراك</th>
-                                    <th>تاريخ البدء</th>
-                                    <th>تاريخ الانتهاء</th>
-                                    <th>المبلغ</th>
-                                    <th>الحالة</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- سيتم ملء هذا الجدول ديناميكياً عبر JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- محتوى الاشتراكات هنا -->
             </div>
 
             <!-- Reports Section -->
             <div id="reports-section" class="admin-section">
-                <div class="admin-header">
-                    <h1 class="page-title">التقارير</h1>
-                    <div class="admin-actions">
-                        <div class="date-range-picker">
-                            <input type="date" class="form-input" id="startDate">
-                            <span>إلى</span>
-                            <input type="date" class="form-input" id="endDate">
-                        </div>
-                        <button class="btn btn-primary" id="generateReportBtn">
-                            <i class="fas fa-chart-line"></i>
-                            <span>إنشاء تقرير</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Reports Content -->
-                <div class="reports-content" id="reportsContent">
-                    <div class="empty-state">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>لا توجد تقارير</h3>
-                        <p>قم بتحديد نطاق زمني وانقر على "إنشاء تقرير" لعرض البيانات.</p>
-                    </div>
-                </div>
+                <!-- محتوى التقارير هنا -->
             </div>
 
             <!-- Settings Section -->
             <div id="settings-section" class="admin-section">
-                <div class="admin-header">
-                    <h1 class="page-title">الإعدادات</h1>
-                    <div class="admin-actions">
-                        <button class="btn btn-primary" id="saveSettingsBtn">
-                            <i class="fas fa-save"></i>
-                            <span>حفظ التغييرات</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Settings Content -->
-                <div class="settings-content">
-                    <div class="admin-table-container">
-                        <div class="admin-table-header">
-                            <h2 class="admin-table-title">إعدادات الموقع</h2>
-                        </div>
-                        <div class="settings-form">
-                            <div class="form-group">
-                                <label for="siteName">اسم الموقع</label>
-                                <input type="text" class="form-input" id="siteName" value="Syautobazar">
-                            </div>
-                            <div class="form-group">
-                                <label for="siteDescription">وصف الموقع</label>
-                                <textarea class="form-input" id="siteDescription" rows="3">موقع بيع وشراء السيارات</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="contactEmail">البريد الإلكتروني للتواصل</label>
-                                <input type="email" class="form-input" id="contactEmail" value="contact@syautobazar.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="contactPhone">رقم الهاتف للتواصل</label>
-                                <input type="text" class="form-input" id="contactPhone" value="+966 12 345 6789">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="admin-table-container">
-                        <div class="admin-table-header">
-                            <h2 class="admin-table-title">إعدادات الاشتراكات</h2>
-                        </div>
-                        <div class="settings-form">
-                            <div class="form-group">
-                                <label for="subscriptionPrice">سعر الاشتراك (ر.س)</label>
-                                <input type="number" class="form-input" id="subscriptionPrice" value="20">
-                            </div>
-                            <div class="form-group">
-                                <label for="subscriptionDuration">مدة الاشتراك (بالأشهر)</label>
-                                <input type="number" class="form-input" id="subscriptionDuration" value="3">
-                            </div>
-                            <div class="form-group">
-                                <label for="maxListings">الحد الأقصى للإعلانات لكل مشترك</label>
-                                <input type="number" class="form-input" id="maxListings" value="10">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- محتوى الإعدادات هنا -->
             </div>
         </div>
     </div>
@@ -1062,5 +917,80 @@
     <script type="module" src="js/enhanced-functions.js"></script>
     <script type="module" src="js/admin_enhanced_integration.js"></script>
     <script type="module" src="js/auth.js"></script>
+
+    <!-- Car Modal for View/Edit -->
+    <div id="carModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+      <form id="carModalForm" style="background:#fff; padding:30px; border-radius:10px; min-width:320px; max-width:90vw; margin:auto; position:relative;">
+        <h2>تفاصيل السيارة</h2>
+        <label>العنوان: <input id="modalCarTitle" name="modalCarTitle" class="form-input" /></label><br>
+        <label>الماركة: <input id="modalCarMake" name="modalCarMake" class="form-input" /></label><br>
+        <label>الموديل: <input id="modalCarModel" name="modalCarModel" class="form-input" /></label><br>
+        <label>السنة: <input id="modalCarYear" name="modalCarYear" class="form-input" /></label><br>
+        <label>السعر: <input id="modalCarPrice" name="modalCarPrice" class="form-input" /></label><br>
+        <label>الموقع: <input id="modalCarLocation" name="modalCarLocation" class="form-input" /></label><br>
+        <label>الوصف: <textarea id="modalCarDescription" name="modalCarDescription" class="form-input"></textarea></label><br>
+        <div style="margin-top:15px;">
+          <button type="submit" id="saveCarModal" class="btn btn-primary">حفظ</button>
+          <button type="button" id="closeCarModal" class="btn btn-outline">إغلاق</button>
+          <button type="button" id="cancelCarModal" class="btn btn-outline">إلغاء</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- User Modal for View/Edit -->
+    <div id="userModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+      <form id="userModalForm" style="background:#fff; padding:30px; border-radius:10px; min-width:320px; max-width:90vw; margin:auto; position:relative;">
+        <h2>تفاصيل المستخدم</h2>
+        <label>الاسم: <input id="modalUserName" name="modalUserName" class="form-input" /></label><br>
+        <label>البريد الإلكتروني: <input id="modalUserEmail" name="modalUserEmail" class="form-input" disabled /></label><br>
+        <label>الهاتف: <input id="modalUserPhone" name="modalUserPhone" class="form-input" /></label><br>
+        <label>الموقع: <input id="modalUserLocation" name="modalUserLocation" class="form-input" /></label><br>
+        <div style="margin-top:15px;">
+          <button type="submit" id="saveUserModal" class="btn btn-primary">حفظ</button>
+          <button type="button" id="closeUserModal" class="btn btn-outline">إغلاق</button>
+          <button type="button" id="cancelUserModal" class="btn btn-outline">إلغاء</button>
+        </div>
+      </form>
+    </div>
 </body>
 </html>
+
+
+
+<!-- Add User Modal -->
+<div id="addUserModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:10000; align-items:center; justify-content:center;">
+  <form id="addUserModalForm" style="background:#fff; padding:30px; border-radius:10px; min-width:320px; max-width:90vw; margin:auto; position:relative;">
+    <h2>إضافة مستخدم جديد</h2>
+    <div class="form-group">
+        <label for="addUserEmail">البريد الإلكتروني:</label>
+        <input type="email" id="addUserEmail" name="addUserEmail" class="form-input" required />
+    </div>
+    <div class="form-group">
+        <label for="addUserPassword">كلمة المرور:</label>
+        <input type="password" id="addUserPassword" name="addUserPassword" class="form-input" required minlength="6" />
+    </div>
+    <div class="form-group">
+        <label>منح اشتراك؟</label>
+        <div>
+            <input type="radio" id="addUserSubscriptionYes" name="addUserSubscription" value="true">
+            <label for="addUserSubscriptionYes">نعم</label>
+            <input type="radio" id="addUserSubscriptionNo" name="addUserSubscription" value="false" checked>
+            <label for="addUserSubscriptionNo">لا</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>منح صلاحية الأدمن؟</label>
+        <div>
+            <input type="radio" id="addUserIsAdminYes" name="addUserIsAdmin" value="true">
+            <label for="addUserIsAdminYes">نعم</label>
+            <input type="radio" id="addUserIsAdminNo" name="addUserIsAdmin" value="false" checked>
+            <label for="addUserIsAdminNo">لا</label>
+        </div>
+    </div>
+    <div style="margin-top:15px;">
+      <button type="submit" id="saveNewUserBtn" class="btn btn-primary">حفظ المستخدم</button>
+      <button type="button" id="closeAddUserModalBtn" class="btn btn-outline">إغلاق</button>
+    </div>
+  </form>
+</div>
+

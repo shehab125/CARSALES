@@ -1,28 +1,28 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAsh7PnIRja-A9DLmP1RfA3O7vakmXEJBw",
-  authDomain: "gig2-b4dfb.firebaseapp.com",
-  projectId: "gig2-b4dfb",
-  storageBucket: "gig2-b4dfb.firebasestorage.app",
-  messagingSenderId: "1016083025093",
-  appId: "1:1016083025093:web:a1863069f1cf55537eb4ac",
-  measurementId: "G-7EENTG3F0M"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Cloudinary Configuration
 const cloudinaryConfig = {
-  cloudName: 'dxtzc2keb',
-  uploadPreset: 'CarSells',
-  apiKey: '343123728866959'
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+  apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY
 };
 
 // PayPal Configuration
 const paypalConfig = {
-  clientId: 'ARLWdOmGgA3pZQC0facoCapXaM4pTj-8ZQAljT2a0cOQgoIytd3AZDxxdS27-AdzN7pwJDyM6hjTaF3C',
-  currency: 'USD',
-  subscriptionPlanId: 'P-QUARTERLY_SUBSCRIPTION_PLAN_ID',
-  subscriptionAmount: 20,
-  subscriptionPeriod: 3 // months
+  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
+  currency: import.meta.env.VITE_PAYPAL_CURRENCY,
+  subscriptionPlanId: import.meta.env.VITE_PAYPAL_SUBSCRIPTION_PLAN_ID,
+  subscriptionAmount: import.meta.env.VITE_PAYPAL_SUBSCRIPTION_AMOUNT,
+  subscriptionPeriod: import.meta.env.VITE_PAYPAL_SUBSCRIPTION_PERIOD
 };
 
 // Initialize Firebase
@@ -39,8 +39,8 @@ import {
     signInWithRedirect,
     getRedirectResult
 } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, where, orderBy, limit as limitFn } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, setDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, where, orderBy, limit as limitFn, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -63,7 +63,8 @@ export async function registerUser(email, password, userData) {
       createdAt: new Date(),
       isAdmin: false,
       isSubscribed: false,
-      subscriptionEnd: null
+      subscriptionEnd: null,
+      photoURL: userData.photoURL
     });
     
     return { success: true, user };
@@ -172,42 +173,50 @@ export async function updateUserProfile(userId, userData) {
 }
 
 // Car Listing Functions
-export async function addCarListing(carData, images) {
-  try {
-    const user = await getCurrentUser();
-    
-    if (!user) {
-      return { success: false, error: "User not authenticated" };
+export async function addCarListing(carData) {
+    try {
+        const user = await getCurrentUser();
+        
+        if (!user) {
+            return { success: false, error: "User not authenticated" };
+        }
+        
+        // Check if user is subscribed
+        const userData = await getUserData(user.uid);
+        
+        if (!userData.success || !userData.userData.isSubscribed) {
+            return { success: false, error: "User not subscribed" };
+        }
+
+        // Ensure images are stored as full URLs
+        if (carData.images && Array.isArray(carData.images)) {
+            carData.images = carData.images.map(img => {
+                if (img.startsWith('data:') || img.startsWith('http')) {
+                    return img;
+                }
+                // For local images, ensure they start with /assets/
+                return img.startsWith('/') ? img : `/assets/${img}`;
+            });
+        }
+
+        const docRef = await addDoc(collection(db, 'cars'), {
+            ...carData,
+            userId: user.uid,
+            createdAt: serverTimestamp(),
+            status: 'waiting'
+        });
+
+        return {
+            success: true,
+            carId: docRef.id
+        };
+    } catch (error) {
+        console.error('Error adding car listing:', error);
+        return {
+            success: false,
+            error: error.message
+        };
     }
-    
-    // Check if user is subscribed
-    const userData = await getUserData(user.uid);
-    
-    if (!userData.success || !userData.userData.isSubscribed) {
-      return { success: false, error: "User not subscribed" };
-    }
-    
-    // Upload images to Cloudinary
-    const imageUrls = await Promise.all(
-      images.map(async (image) => {
-        const imageUrl = await uploadImageToCloudinary(image);
-        return imageUrl;
-      })
-    );
-    
-    // Add car listing to Firestore
-    const carDoc = await addDoc(collection(db, "cars"), {
-      ...carData,
-      images: imageUrls,
-      userId: user.uid,
-      createdAt: new Date(),
-      status: "waiting"
-    });
-    
-    return { success: true, carId: carDoc.id };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
 }
 
 export async function getCarListings(filters = {}, sortBy = "createdAt", sortOrder = "desc", limit = 20) {
@@ -539,10 +548,14 @@ export { uploadImageToCloudinary };
 
 async function uploadImageToCloudinary(file) {
   return new Promise((resolve, reject) => {
+    // Debug logs
+    console.log('Uploading to Cloudinary...');
+    console.log('File:', file);
+    console.log('Upload Preset:', cloudinaryConfig.uploadPreset);
+    console.log('Cloud Name:', cloudinaryConfig.cloudName);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', cloudinaryConfig.uploadPreset);
-    
     fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, {
       method: 'POST',
       body: formData
@@ -552,11 +565,13 @@ async function uploadImageToCloudinary(file) {
       if (data.secure_url) {
         resolve(data.secure_url);
       } else {
-        // Show Cloudinary error message if available
+        // Debug log for error
+        console.error('Cloudinary upload error response:', data);
         reject(new Error(data.error && data.error.message ? data.error.message : 'Failed to upload image'));
       }
     })
     .catch(error => {
+      console.error('Cloudinary upload fetch error:', error);
       reject(error);
     });
   });
@@ -649,6 +664,74 @@ export async function updateUserAdminStatus(userId, isAdmin) {
   } catch (error) {
         return { success: false, error: error.message };
     }
+}
+
+// Delete all cars for a user
+export async function deleteUserCars(userId) {
+  try {
+    console.log('Starting car deletion process for user:', userId);
+    
+    // Get all cars for the user
+    const carsResult = await getCarListings({ userId });
+    
+    if (!carsResult.success) {
+      console.error('Failed to get user cars:', carsResult.error);
+      return { success: false, error: "Failed to get user cars" };
+    }
+    
+    console.log(`Found ${carsResult.cars.length} cars to delete`);
+    
+    // Delete each car
+    const deletePromises = carsResult.cars.map(async (car) => {
+      try {
+        console.log(`Deleting car ${car.id}...`);
+        
+        // Delete car document
+        const carRef = doc(db, "cars", car.id);
+        await deleteDoc(carRef);
+        console.log(`Successfully deleted car document ${car.id}`);
+        
+        // If car has images in storage, delete them too
+        if (car.images && Array.isArray(car.images)) {
+          console.log(`Deleting ${car.images.length} images for car ${car.id}`);
+          const storageRef = getStorage();
+          const deleteImagePromises = car.images.map(async (imageUrl) => {
+            try {
+              if (imageUrl.startsWith('http')) {
+                const imageRef = ref(storageRef, imageUrl);
+                await deleteObject(imageRef);
+                console.log(`Successfully deleted image: ${imageUrl}`);
+              }
+            } catch (error) {
+              console.error(`Error deleting image ${imageUrl}:`, error);
+              // Continue with other deletions even if one fails
+            }
+          });
+          await Promise.all(deleteImagePromises);
+        }
+        
+        return true;
+      } catch (error) {
+        console.error(`Error deleting car ${car.id}:`, error);
+        throw error;
+      }
+    });
+    
+    await Promise.all(deletePromises);
+    console.log('Successfully completed car deletion process');
+    
+    // Verify deletion
+    const verifyResult = await getCarListings({ userId });
+    if (verifyResult.success && verifyResult.cars.length > 0) {
+      console.error('Verification failed: Some cars still exist');
+      return { success: false, error: "Some cars could not be deleted" };
+    }
+    
+    return { success: true };
+  } catch (error) {
+    console.error('[deleteUserCars] Error:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 // Export configurations

@@ -394,9 +394,8 @@ async function handleCarFormSubmit(e) {
         console.log('addCarListing result:', result);
         
         if (result.success) {
-            // Show success message
-            showSuccess('تم إرسال السيارة بنجاح! سيتم مراجعتها والموافقة عليها من قبل الإدارة قريبًا.');
-            console.log('Success shown:', 'تم إرسال السيارة بنجاح! سيتم مراجعتها والموافقة عليها من قبل الإدارة قريبًا.');
+            // Show success message with status
+            showSuccess('تم إرسال طلب إضافة السيارة بنجاح! سيتم مراجعته من قبل الإدارة قريبًا.');
             
             // Reset form
             e.target.reset();
@@ -413,9 +412,9 @@ async function handleCarFormSubmit(e) {
                 uploadButton.classList.remove('disabled');
             }
             
-            // Redirect to car details page after 2 seconds
+            // Redirect to profile page after 2 seconds
             setTimeout(() => {
-                window.location.href = `car-detail.html?id=${result.carId}`;
+                window.location.href = 'profile.html';
             }, 2000);
         } else {
             showError(result.error || 'حدث خطأ أثناء إضافة السيارة. يرجى المحاولة مرة أخرى.');

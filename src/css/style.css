@@ -675,53 +675,85 @@ img {
   .mobile-menu-btn {
     display: block;
   }
-  
+
+  .mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.25);
+    z-index: 998;
+  }
+  .mobile-menu-overlay.active {
+    display: block;
+  }
+
   .nav-links {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
+    position: fixed;
+    top: 70px;
+    left: 10px;
+    right: 10px;
     background-color: var(--white);
     padding: 20px;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
+    flex-direction: column;
+    align-items: center;
+    z-index: 999;
+    border-radius: 16px;
+    max-height: 60vh;
+    overflow-y: auto;
   }
-  
+
   .nav-links.active {
     display: flex;
   }
-  
-  .auth-buttons .btn, .user-dropdown-btn {
-    font-size: 13px;
-    padding: 5px 10px;
-  }
-  
-  .user-avatar {
-    width: 24px;
-    height: 24px;
-  }
-  
+
   .auth-buttons {
-    display: none;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
-  
-  .auth-buttons.active {
-    display: flex;
-    flex-direction: column;
+
+  .user-dropdown {
     width: 100%;
-    padding: 10px 20px 20px;
-    background-color: var(--white);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
   }
-  
-  .form-actions {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .form-actions .btn {
+
+  .user-dropdown-btn {
     width: 100%;
+    justify-content: center;
+  }
+
+  .user-dropdown-content {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: none;
+  }
+
+  .nav-links li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links li:not(:last-child) {
+    margin-bottom: 12px;
+  }
+
+  .nav-links li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .hero-section,
+  .search-form,
+  .featured-section,
+  .latest-cars,
+  .categories-section {
+    position: relative;
+    z-index: 1;
   }
 }
 

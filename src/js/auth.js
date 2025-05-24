@@ -1,8 +1,10 @@
 // Main JavaScript file for authentication functionality
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-const auth = getAuth();
+import { getAuth, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 import { registerUser, loginUser, logoutUser, getCurrentUser, getUserData, resetPassword, signInWithGoogle } from './firebase-api.js';
-import { getRedirectResult } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+const auth = getAuth();
+
+const DEFAULT_PROFILE_IMAGE = 'https://res.cloudinary.com/dxtzc2keb/image/upload/v1748099922/hs3bv2taadgs2nbj36iz.avif';
 
 // Comment out or remove the call to createAdminUserIfNotExists in DOMContentLoaded
 // document.addEventListener('DOMContentLoaded', async function() {
@@ -106,6 +108,7 @@ function showLoginTab() {
     const tabs = document.querySelectorAll('.auth-tab');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     
     tabs.forEach(tab => {
         if (tab.dataset.tab === 'login') {
@@ -117,6 +120,7 @@ function showLoginTab() {
     
     if (loginForm) loginForm.style.display = 'block';
     if (registerForm) registerForm.style.display = 'none';
+    if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
     
     // Update URL without reloading
     const url = new URL(window.location);
@@ -129,6 +133,7 @@ function showRegisterTab() {
     const tabs = document.querySelectorAll('.auth-tab');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
     
     tabs.forEach(tab => {
         if (tab.dataset.tab === 'register') {
@@ -140,6 +145,7 @@ function showRegisterTab() {
     
     if (loginForm) loginForm.style.display = 'none';
     if (registerForm) registerForm.style.display = 'block';
+    if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
     
     // Update URL without reloading
     const url = new URL(window.location);
@@ -171,9 +177,10 @@ async function handleLogin(e) {
             // Check if user is admin
             const user = result.user;
             const userDataResult = await getUserData(user.uid);
+            
             if (userDataResult.success && userDataResult.userData.isAdmin) {
                 // Redirect to admin dashboard
-                window.location.href = 'admin_enhanced_updated.html';
+                window.location.href = 'admin_enhanced.html';
                 return;
             }
             // Redirect to home page or dashboard
@@ -232,39 +239,41 @@ async function handleRegister(e) {
             name,
             phone,
             location: '',
-            createdAt: new Date()
+            createdAt: new Date(),
+            isAdmin: false,
+            photoURL: DEFAULT_PROFILE_IMAGE
         };
         
         const result = await registerUser(email, password, userData);
         
         if (result.success) {
-            // Show success message and redirect to login
+            // Show success message
             const successElement = document.getElementById('registerSuccess');
-            successElement.textContent = 'تم إنشاء الحساب بنجاح! سيتم توجيهك لتسجيل الدخول...';
+            successElement.textContent = 'تم إنشاء الحساب بنجاح! جاري تحويلك...';
             successElement.style.display = 'block';
             
-            // Redirect to login after 2 seconds
+            // Redirect to home page after 1 second
             setTimeout(() => {
-                showLoginTab();
-                successElement.style.display = 'none';
-            }, 2000);
-            
-            // Reset form
-            document.getElementById('registerForm').reset();
+                window.location.href = 'index.html';
+            }, 1000);
         } else {
             // Show error message
             errorElement.textContent = translateFirebaseError(result.error);
             errorElement.style.display = 'block';
+            
+            // Reset button
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'إنشاء حساب';
         }
     } catch (error) {
         // Show error message
         errorElement.textContent = translateFirebaseError(error.message);
         errorElement.style.display = 'block';
+        
+        // Reset button
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'إنشاء حساب';
     }
-    
-    // Reset button
-    submitButton.disabled = false;
-    submitButton.innerHTML = 'إنشاء حساب';
 }
 
 // Handle Logout
@@ -273,59 +282,35 @@ async function handleLogout(e) {
     
     try {
         await logoutUser();
-        // Redirect to home page
         window.location.href = 'index.html';
     } catch (error) {
         console.error('Error logging out:', error);
-        alert('حدث خطأ أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى.');
+        alert('حدث خطأ أثناء تسجيل الخروج');
     }
 }
 
 // Check Authentication State
 async function checkAuthState() {
-    try {
-        const user = await getCurrentUser();
-        const authButtons = document.getElementById('authButtons');
-        
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
-            // User is logged in
-            const userData = await getUserData(user.uid);
-            
-            if (userData.success) {
-                // Update UI for logged-in user
-                updateUIForLoggedInUser(userData.userData);
-                
-                // Check if user is on auth page and redirect if needed
-                const isAuthPage = window.location.pathname.includes('auth.html');
-                if (isAuthPage) {
-                    window.location.href = 'index.html';
+            try {
+                const userDataResult = await getUserData(user.uid);
+                if (userDataResult.success) {
+                    updateUIForLoggedInUser(userDataResult.userData);
+                } else {
+                    console.error('Error getting user data:', userDataResult.error);
+                    updateUIForLoggedOutUser();
                 }
-                
-                // Check if user is on sell page and not subscribed
-                const isSellPage = window.location.pathname.includes('sell.html');
-                if (isSellPage && !userData.userData.isSubscribed) {
-                    // Redirect to subscription page
-                    window.location.href = 'subscription.html?redirect=sell';
-                }
+            } catch (error) {
+                console.error('Error in auth state change:', error);
+                updateUIForLoggedOutUser();
             }
         } else {
-            // User is not logged in
             updateUIForLoggedOutUser();
-            
-            // Check if user is on protected pages and redirect if needed
-            const protectedPages = ['sell.html', 'profile.html', 'admin_enhanced_updated.html'];
-            const currentPage = window.location.pathname.split('/').pop();
-            
-            if (protectedPages.includes(currentPage)) {
-                window.location.href = `auth.html?redirect=${currentPage}`;
-            }
         }
-    } catch (error) {
-        console.error('Error checking auth state:', error);
-    }
+    });
 }
 
-// Update UI for Logged In User
 function updateUIForLoggedInUser(userData) {
     const authButtons = document.getElementById('authButtons');
     
@@ -334,7 +319,7 @@ function updateUIForLoggedInUser(userData) {
         const userDropdownHTML = `
             <div class="user-dropdown">
                 <button class="user-dropdown-btn">
-                    <img src="${userData.photoURL || 'images/user-avatar.jpg'}" alt="${userData.name}" class="user-avatar">
+                    <img src="${userData.photoURL || DEFAULT_PROFILE_IMAGE}" alt="${userData.name}" class="user-avatar">
                     <span>${userData.name}</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -406,43 +391,34 @@ function updateUIForLoggedInUser(userData) {
     }
 }
 
+
 // Update UI for Logged Out User
 function updateUIForLoggedOutUser() {
     const authButtons = document.getElementById('authButtons');
+    const userDropdown = document.getElementById('userDropdown');
     
-    if (authButtons) {
-        // Create auth buttons HTML
-        const authButtonsHTML = `
-            <a href="auth.html" class="btn btn-outline">تسجيل الدخول</a>
-            <a href="auth.html?tab=register" class="btn btn-primary">إنشاء حساب</a>
-        `;
-        
-        // Replace user dropdown with auth buttons
-        authButtons.innerHTML = authButtonsHTML;
-    }
+    if (authButtons) authButtons.style.display = 'flex';
+    if (userDropdown) userDropdown.style.display = 'none';
 }
 
 // Translate Firebase Error Messages
 function translateFirebaseError(errorMessage) {
-    const errorMap = {
+    const errorTranslations = {
+        'auth/user-not-found': 'البريد الإلكتروني غير مسجل',
+        'auth/wrong-password': 'كلمة المرور غير صحيحة',
         'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
+        'auth/weak-password': 'كلمة المرور ضعيفة جداً',
         'auth/invalid-email': 'البريد الإلكتروني غير صالح',
-        'auth/user-disabled': 'تم تعطيل هذا الحساب',
-        'auth/user-not-found': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
-        'auth/wrong-password': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
-        'auth/weak-password': 'كلمة المرور ضعيفة جداً، يجب أن تكون على الأقل 6 أحرف',
-        'auth/too-many-requests': 'تم تعطيل الوصول إلى هذا الحساب مؤقتاً بسبب العديد من محاولات تسجيل الدخول الفاشلة. يمكنك استعادة كلمة المرور أو المحاولة مرة أخرى لاحقاً'
+        'auth/operation-not-allowed': 'العملية غير مسموح بها',
+        'auth/account-exists-with-different-credential': 'يوجد حساب آخر بنفس البريد الإلكتروني',
+        'auth/credential-already-in-use': 'هذه البيانات مستخدمة بالفعل',
+        'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول',
+        'auth/cancelled-popup-request': 'تم إلغاء طلب تسجيل الدخول',
+        'auth/popup-blocked': 'تم منع نافذة تسجيل الدخول',
+        'auth/network-request-failed': 'فشل الاتصال بالشبكة'
     };
     
-    // Check if error message contains a known Firebase error code
-    for (const errorCode in errorMap) {
-        if (errorMessage.includes(errorCode)) {
-            return errorMap[errorCode];
-        }
-    }
-    
-    // Default error message
-    return 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
+    return errorTranslations[errorMessage] || errorMessage;
 }
 
 // Handle Forgot Password
@@ -468,7 +444,6 @@ async function handleForgotPassword(e) {
         const result = await resetPassword(email);
         
         if (result.success) {
-            // Show success message
             successElement.textContent = 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني';
             successElement.style.display = 'block';
             
@@ -480,28 +455,25 @@ async function handleForgotPassword(e) {
                 showLoginTab();
             }, 3000);
         } else {
-            // Show error message
             errorElement.textContent = translateFirebaseError(result.error);
             errorElement.style.display = 'block';
         }
     } catch (error) {
-        // Show error message
         errorElement.textContent = translateFirebaseError(error.message);
         errorElement.style.display = 'block';
+    } finally {
+        // Reset button
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'إرسال رابط إعادة التعيين';
     }
-    
-    // Reset button
-    submitButton.disabled = false;
-    submitButton.innerHTML = 'إرسال رابط إعادة التعيين';
 }
 
 // Handle Google Sign In
 async function handleGoogleSignIn(e) {
     e.preventDefault();
     
-    const errorElement = document.getElementById('loginError');
+    const errorElement = document.getElementById('loginError') || document.getElementById('registerError');
     const submitButton = e.target;
-    const originalButtonText = submitButton.innerHTML;
     
     // Disable button and show loading state
     submitButton.disabled = true;
@@ -517,31 +489,30 @@ async function handleGoogleSignIn(e) {
         const result = await signInWithGoogle();
         
         if (result.success) {
-            // Redirect to home page
-            window.location.href = 'index.html';
-        } else {
-            // Show error message
-            if (errorElement) {
-                errorElement.textContent = result.error;
-                errorElement.style.display = 'block';
+            // Check if user is admin
+            const userDataResult = await getUserData(result.user.uid);
+            
+            if (userDataResult.success && userDataResult.userData.isAdmin) {
+                window.location.href = 'admin_enhanced.html';
+                return;
             }
             
-            // Reset button
-            submitButton.disabled = false;
-            submitButton.innerHTML = originalButtonText;
+            window.location.href = 'index.html';
+        } else {
+            if (errorElement) {
+                errorElement.textContent = translateFirebaseError(result.error);
+                errorElement.style.display = 'block';
+            }
         }
     } catch (error) {
-        console.error('Google Sign In Error:', error);
-        
-        // Show error message
         if (errorElement) {
-            errorElement.textContent = 'حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.';
+            errorElement.textContent = translateFirebaseError(error.message);
             errorElement.style.display = 'block';
         }
-        
+    } finally {
         // Reset button
         submitButton.disabled = false;
-        submitButton.innerHTML = originalButtonText;
+        submitButton.innerHTML = '<i class="fab fa-google"></i> تسجيل الدخول باستخدام Google';
     }
 }
 

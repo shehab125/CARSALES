@@ -67,20 +67,41 @@ document.addEventListener('DOMContentLoaded', async function() {
 function initMobileMenu() {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const navLinks = document.getElementById('navLinks');
+    const authButtons = document.getElementById('authButtons');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
     
+    function closeMenu() {
+        navLinks.classList.remove('active');
+        if (authButtons) authButtons.classList.remove('active');
+        if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+    }
+
     if (mobileMenuBtn && navLinks) {
         mobileMenuBtn.addEventListener('click', function() {
             navLinks.classList.toggle('active');
+            if (authButtons) {
+                authButtons.classList.toggle('active');
+            }
             this.classList.toggle('active');
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.navbar') && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
-                mobileMenuBtn.classList.remove('active');
+            if (mobileMenuOverlay) {
+                if (navLinks.classList.contains('active')) {
+                    mobileMenuOverlay.classList.add('active');
+                } else {
+                    mobileMenuOverlay.classList.remove('active');
+                }
             }
         });
+        
+        // Close menu when clicking outside or on overlay
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.navbar') && navLinks.classList.contains('active')) {
+                closeMenu();
+            }
+        });
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', closeMenu);
+        }
     }
 }
 

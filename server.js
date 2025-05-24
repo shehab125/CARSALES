@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const paypal = require('@paypal/checkout-server-sdk');
@@ -17,8 +18,8 @@ app.use(express.static(path.join(__dirname, 'src'), {
 // PayPal configuration
 // Use environment variables for security in production
 let environment = new paypal.core.LiveEnvironment(
-    process.env.PAYPAL_LIVE_CLIENT_ID || 'YOUR_LIVE_CLIENT_ID', // Replace with your real Live Client ID
-    process.env.PAYPAL_LIVE_SECRET || 'YOUR_LIVE_SECRET'        // Replace with your real Live Secret
+    process.env.PAYPAL_LIVE_CLIENT_ID,
+    process.env.PAYPAL_LIVE_SECRET
 );
 let client = new paypal.core.PayPalHttpClient(environment);
 
@@ -157,7 +158,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log('PayPal Live environment is active');
