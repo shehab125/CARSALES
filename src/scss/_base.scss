@@ -1,7 +1,7 @@
 // Base styles
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+    font-family: $font-family-base;
+    line-height: $line-height-base;
     margin: 0;
     padding: 0;
     background-color: $light-color;
